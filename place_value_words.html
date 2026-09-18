@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Words</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;600;700&display=swap">
+<style>
+  :root {
+    --paper: #F6F4F8;
+    --card: #FFFFFF;
+    --ink: #1E2027;
+    --ink-soft: #5C5A66;
+    --brand: #7A4C8C;
+    --brand-soft: #EFE2F2;
+    --accent: #DD6B27;
+    --accent-ink: #FFFFFF;
+    --correct: #2F9E5B;
+    --correct-bg: #E5F6EC;
+    --wrong: #D6455B;
+    --wrong-bg: #FBE7EA;
+    --border: #DAD5E0;
+    --shadow: none;
+    --focus: #7A4C8C;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1E1826;
+      --card: #29202F;
+      --ink: #F1ECF5;
+      --ink-soft: #BDB2C7;
+      --brand: #C79BD6;
+      --brand-soft: #3A2C42;
+      --accent: #E8863F;
+      --accent-ink: #2A1500;
+      --correct: #4FCB84;
+      --correct-bg: #163326;
+      --wrong: #E8768A;
+      --wrong-bg: #3A1F24;
+      --border: #3E3346;
+      --focus: #C79BD6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1E1826;
+    --card: #29202F;
+    --ink: #F1ECF5;
+    --ink-soft: #BDB2C7;
+    --brand: #C79BD6;
+    --brand-soft: #3A2C42;
+    --accent: #E8863F;
+    --accent-ink: #2A1500;
+    --correct: #4FCB84;
+    --correct-bg: #163326;
+    --wrong: #E8768A;
+    --wrong-bg: #3A1F24;
+    --border: #3E3346;
+    --focus: #C79BD6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 27px,
+        var(--brand-soft) 27px,
+        var(--brand-soft) 28px
+      ),
+      var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+    display: flex;
+    justify-content: center;
+  }
+
+  .wrap {
+    width: 100%;
+    max-width: 620px;
+    margin: 0 auto;
+    padding: clamp(20px, 3vw, 44px) clamp(16px, 4vw, 40px) 60px;
+  }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: transparent;
+    margin-bottom: 18px;
+  }
+  .home-link:hover { background: var(--brand-soft); }
+  .home-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  header.hero { margin-bottom: 24px; }
+
+  .masthead {
+    background: var(--brand);
+    color: #fff;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 16px;
+    margin: 0;
+    max-width: 56ch;
+  }
+
+  .panel {
+    position: relative;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 34px 24px 28px;
+    text-align: center;
+  }
+
+  .tab {
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: var(--brand);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 12px;
+    border-radius: 5px;
+  }
+
+  .number-display {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(2.6rem, 10vw, 3.6rem);
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--ink);
+    margin-bottom: 18px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .words-display {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--brand);
+    min-height: 3.2rem;
+    margin-bottom: 26px;
+    line-height: 1.4;
+    text-transform: capitalize;
+  }
+
+  .button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .primary-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    padding: 13px 26px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .primary-btn:hover { filter: brightness(1.05); }
+  .primary-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  .ghost-btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    background: transparent;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .ghost-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .ghost-btn:hover { background: var(--brand-soft); }
+
+  .hint-text {
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  footer.note {
+    color: var(--ink-soft);
+    font-size: 12px;
+    margin-top: 24px;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="home-link" href="index.html">&larr; All resources</a>
+
+  <header class="hero">
+    <div class="masthead">
+      <h1>Number Words</h1>
+    </div>
+    <p class="subtitle">Generate a number, say it out loud, then reveal how it's written in words.</p>
+  </header>
+
+  <section class="panel">
+    <span class="tab">Practice</span>
+
+    <div id="number" class="number-display">-----</div>
+    <div id="words" class="words-display"></div>
+
+    <div class="button-group">
+      <button class="ghost-btn" onclick="showWords()">Show in Words</button>
+      <button class="primary-btn" onclick="generateNumber()">Generate New Number</button>
+    </div>
+
+    <div class="hint-text">
+      Press <strong>Space</strong> for new number &middot; <strong>Enter</strong> for words
+    </div>
+  </section>
+
+  <footer class="note">Numbers are five or six digits, so there's always place value to talk through.</footer>
+</div>
+
+<script>
+  let currentNumber = 0;
+
+  function generateNumber() {
+    // Randomly decide between 5 digits (10000-99999) or 6 digits (100000-999999)
+    const min = 10000;
+    const max = 999999;
+    currentNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    // Update UI with comma formatting (e.g. 123,456)
+    document.getElementById('number').textContent = currentNumber.toLocaleString('en-US');
+    document.getElementById('words').textContent = ''; // Hide words when a new number is generated
+  }
+
+  function showWords() {
+    if (!currentNumber) return;
+    document.getElementById('words').textContent = numberToWords(currentNumber);
+  }
+
+  function numberToWords(num) {
+    const units = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+                   'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+    const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+    function convertBelowThousand(n) {
+      let parts = [];
+
+      if (n >= 100) {
+        parts.push(units[Math.floor(n / 100)] + ' hundred');
+        n %= 100;
+      }
+
+      if (n > 0) {
+        // Add "and" if there were hundreds before this remainder
+        let prefix = parts.length > 0 ? 'and ' : '';
+
+        if (n >= 20) {
+          let tensStr = tens[Math.floor(n / 10)] + (n % 10 ? '-' + units[n % 10] : '');
+          parts.push(prefix + tensStr);
+        } else {
+          parts.push(prefix + units[n]);
+        }
+      }
+
+      return parts.join(' ');
+    }
+
+    const thousands = Math.floor(num / 1000);
+    const remainder = num % 1000;
+
+    let result = convertBelowThousand(thousands) + ' thousand';
+
+    if (remainder > 0) {
+      // If remainder is under 100 (no hundred component), prefix with "and "
+      let remainderWords = convertBelowThousand(remainder);
+      if (remainder < 100) {
+        remainderWords = 'and ' + remainderWords;
+      }
+      result += ', ' + remainderWords;
+    }
+
+    return result;
+  }
+
+  // Keyboard Shortcuts Listener
+  document.addEventListener('keydown', function(event) {
+    if (event.code === 'Space') {
+      event.preventDefault(); // Prevents spacebar from scrolling down
+      generateNumber();
+    } else if (event.code === 'Enter') {
+      event.preventDefault(); // Prevents triggering focused buttons twice
+      showWords();
+    }
+  });
+
+  // Generate a number on initial load
+  generateNumber();
+</script>
+
+</body>
+</html>

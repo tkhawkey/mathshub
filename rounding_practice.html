@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rounding Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;600;700&display=swap">
+<style>
+  :root {
+    --paper: #F6F4F8;
+    --card: #FFFFFF;
+    --ink: #1E2027;
+    --ink-soft: #5C5A66;
+    --brand: #7A4C8C;
+    --brand-soft: #EFE2F2;
+    --accent: #DD6B27;
+    --accent-ink: #FFFFFF;
+    --correct: #2F9E5B;
+    --correct-bg: #E5F6EC;
+    --wrong: #D6455B;
+    --wrong-bg: #FBE7EA;
+    --border: #DAD5E0;
+    --shadow: none;
+    --focus: #7A4C8C;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1E1826;
+      --card: #29202F;
+      --ink: #F1ECF5;
+      --ink-soft: #BDB2C7;
+      --brand: #C79BD6;
+      --brand-soft: #3A2C42;
+      --accent: #E8863F;
+      --accent-ink: #2A1500;
+      --correct: #4FCB84;
+      --correct-bg: #163326;
+      --wrong: #E8768A;
+      --wrong-bg: #3A1F24;
+      --border: #3E3346;
+      --focus: #C79BD6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1E1826;
+    --card: #29202F;
+    --ink: #F1ECF5;
+    --ink-soft: #BDB2C7;
+    --brand: #C79BD6;
+    --brand-soft: #3A2C42;
+    --accent: #E8863F;
+    --accent-ink: #2A1500;
+    --correct: #4FCB84;
+    --correct-bg: #163326;
+    --wrong: #E8768A;
+    --wrong-bg: #3A1F24;
+    --border: #3E3346;
+    --focus: #C79BD6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 27px,
+        var(--brand-soft) 27px,
+        var(--brand-soft) 28px
+      ),
+      var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: clamp(20px, 3vw, 44px) clamp(16px, 4vw, 40px) 60px;
+  }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: transparent;
+    margin-bottom: 18px;
+  }
+  .home-link:hover { background: var(--brand-soft); }
+  .home-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  header.hero { margin-bottom: 24px; }
+
+  .masthead {
+    background: var(--brand);
+    color: #fff;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 16px;
+    margin: 0 0 22px;
+    max-width: 56ch;
+  }
+
+  .panel {
+    position: relative;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 26px 22px 24px;
+    margin-bottom: 22px;
+  }
+
+  .tab {
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: var(--brand);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 12px;
+    border-radius: 5px;
+  }
+
+  fieldset {
+    border: none;
+    margin: 0 0 20px;
+    padding: 0;
+  }
+  fieldset:last-of-type { margin-bottom: 8px; }
+
+  legend {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 10px;
+    padding: 0;
+  }
+
+  .level-hint {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 10px 0 0;
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pill {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 9px 16px;
+    border: 2px solid var(--border);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  .pill:hover { border-color: var(--brand); }
+  .pill:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .pill.active {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+  }
+
+  .primary-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    padding: 13px 26px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .primary-btn:hover { filter: brightness(1.05); }
+  .primary-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .primary-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .ghost-btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    background: transparent;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .ghost-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .ghost-btn:hover { background: var(--brand-soft); }
+  .ghost-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .hidden { display: none !important; }
+
+  /* --- game screen --- */
+
+  .toprow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    text-align: center;
+    min-width: 84px;
+  }
+  .stat .num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    display: block;
+  }
+  .stat .lbl {
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+
+  .question {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(20px, 4vw, 26px);
+    font-weight: 700;
+    margin-bottom: 22px;
+  }
+  .question .target-num { color: var(--brand); }
+  .question .degree-word { color: var(--accent); }
+
+  .answer-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .answer-input {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    text-align: center;
+    padding: 12px 10px;
+    width: 160px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--ink);
+  }
+  .answer-input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-color: var(--brand); }
+  .answer-input.correct { border-color: var(--correct); background: var(--correct-bg); }
+  .answer-input.wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+  .answer-input:disabled { color: var(--ink); -webkit-text-fill-color: var(--ink); opacity: 1; }
+
+  .feedback-line {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .feedback-line.correct { color: var(--correct); }
+  .feedback-line.wrong { color: var(--wrong); }
+
+  /* --- number line reveal --- */
+
+  .rl-wrap {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 2px dashed var(--border);
+  }
+
+  .rl-scroll {
+    overflow-x: auto;
+    padding: 60px 4px 40px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .rl-scroll::-webkit-scrollbar {
+    display: none;
+    height: 0;
+    background: transparent;
+  }
+
+  .rl-line {
+    position: relative;
+    min-width: 560px;
+    height: 2px;
+    background: var(--ink);
+    margin: 0 40px;
+    opacity: 0;
+    transition: opacity .65s ease;
+  }
+  .rl-line.show { opacity: 1; }
+
+  .rl-tick {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .rl-tick::before {
+    content: "";
+    width: 2px;
+    height: 14px;
+    background: var(--ink-soft);
+    display: block;
+    margin-top: -6px;
+  }
+
+  .rl-tick-label {
+    margin-top: 6px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--ink-soft);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity .65s ease;
+  }
+  .rl-tick-label.show { opacity: 1; }
+  .rl-tick-label.end-label { color: var(--ink); font-size: 15px; }
+
+  .rl-tick-label.answer-box {
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 2px solid transparent;
+  }
+  .rl-tick-label.answer-box.pulse {
+    border-color: var(--correct);
+    background: var(--correct-bg);
+    color: var(--correct);
+    animation: rlPulse .6s ease 2;
+  }
+
+  @keyframes rlPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.18); }
+    100% { transform: scale(1); }
+  }
+
+  .rl-marker {
+    position: absolute;
+    top: -46px;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transition: opacity .65s ease;
+  }
+  .rl-marker.show { opacity: 1; }
+  .rl-marker-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--brand);
+    white-space: nowrap;
+    background: var(--brand-soft);
+    padding: 3px 9px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+  }
+  .rl-marker-arrow {
+    font-size: 16px;
+    line-height: 1;
+    color: var(--brand);
+  }
+
+  .rl-replay {
+    margin-top: 10px;
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+
+  footer.note {
+    color: var(--ink-soft);
+    font-size: 12px;
+    margin-top: 30px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="home-link" href="index.html">&larr; All resources</a>
+
+  <header class="hero">
+    <div class="masthead">
+      <h1>Rounding Practice</h1>
+    </div>
+    <p class="subtitle">Round numbers up to 100,000 to the nearest 10, 100 or 1,000 &mdash; then watch a number line show you why.</p>
+  </header>
+
+  <!-- SETUP SCREEN -->
+  <section id="setup-screen" class="panel">
+    <span class="tab">Set up</span>
+
+    <fieldset id="level-field">
+      <legend>Difficulty</legend>
+      <div class="pill-row" id="level-pills">
+        <button class="pill active" data-value="1">1 &middot; Warm-up</button>
+        <button class="pill" data-value="2">2 &middot; Building up</button>
+        <button class="pill" data-value="3">3 &middot; Stepping up</button>
+        <button class="pill" data-value="4">4 &middot; Getting tricky</button>
+        <button class="pill" data-value="5">5 &middot; Expert</button>
+      </div>
+      <p class="level-hint" id="level-hint"></p>
+    </fieldset>
+
+    <button class="primary-btn" id="start-btn">Start practising</button>
+  </section>
+
+  <!-- GAME SCREEN -->
+  <section id="game-screen" class="hidden">
+    <div class="toprow">
+      <button class="ghost-btn" id="settings-btn">Change settings</button>
+      <div class="stats">
+        <div class="stat"><span class="num" id="stat-correct">0</span><span class="lbl">correct</span></div>
+        <div class="stat"><span class="num" id="stat-attempted">0</span><span class="lbl">attempted</span></div>
+        <div class="stat"><span class="num" id="stat-streak">0</span><span class="lbl">streak</span></div>
+        <div class="stat"><span class="num" id="stat-best">0</span><span class="lbl">best streak</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <span class="tab">Round it</span>
+
+      <p class="question" id="question-text"></p>
+
+      <div class="answer-row">
+        <input class="answer-input" type="text" inputmode="numeric" id="answer-input" aria-label="Your rounded answer">
+        <button class="primary-btn" id="reveal-btn" style="margin-top:0;">Reveal</button>
+      </div>
+      <p class="feedback-line hidden" id="feedback-line"></p>
+
+      <div class="rl-wrap hidden" id="rl-wrap">
+        <div class="rl-scroll">
+          <div class="rl-line" id="rl-line"></div>
+        </div>
+        <button class="ghost-btn rl-replay hidden" id="replay-btn">Replay animation</button>
+      </div>
+
+      <div class="actions">
+        <button class="ghost-btn" id="next-btn">New question</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="note">Numbers regenerate every round, so there's always a fresh one to round.</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var settings = { level: "1" };
+  var score = { correct: 0, attempted: 0, streak: 0, best: 0 };
+  var round = null;
+  var replayTimers = [];
+
+  var LEVELS = {
+    "1": { desc: "Numbers up to 1,000, rounding to the nearest 10.", max: 1000, degrees: [10] },
+    "2": { desc: "Numbers up to 1,000, rounding to the nearest 10 or 100.", max: 1000, degrees: [10, 100] },
+    "3": { desc: "Numbers up to 10,000, rounding to the nearest 10 or 100.", max: 10000, degrees: [10, 100] },
+    "4": { desc: "Numbers up to 10,000, rounding to the nearest 10, 100 or 1,000.", max: 10000, degrees: [10, 100, 1000] },
+    "5": { desc: "Numbers up to 100,000, rounding to the nearest 10, 100 or 1,000.", max: 100000, degrees: [10, 100, 1000] }
+  };
+
+  var DEGREE_WORDS = { 10: "ten", 100: "hundred", 1000: "thousand" };
+
+  try {
+    var savedBest = localStorage.getItem("rtn-best-streak");
+    if (savedBest) score.best = parseInt(savedBest, 10) || 0;
+  } catch (e) { /* storage unavailable, carry on without persistence */ }
+
+  function fmt(n) { return n.toLocaleString("en-GB"); }
+
+  function wirePillGroup(containerId, key) {
+    var container = document.getElementById(containerId);
+    container.querySelectorAll(".pill").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        container.querySelectorAll(".pill").forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        settings[key] = btn.dataset.value;
+      });
+    });
+  }
+  function updateLevelHint() {
+    document.getElementById("level-hint").textContent = LEVELS[settings.level].desc;
+  }
+  wirePillGroup("level-pills", "level");
+  document.getElementById("level-pills").addEventListener("click", updateLevelHint);
+  updateLevelHint();
+
+  document.getElementById("start-btn").addEventListener("click", function () {
+    document.getElementById("setup-screen").classList.add("hidden");
+    document.getElementById("game-screen").classList.remove("hidden");
+    newRound();
+  });
+
+  document.getElementById("settings-btn").addEventListener("click", function () {
+    document.getElementById("game-screen").classList.add("hidden");
+    document.getElementById("setup-screen").classList.remove("hidden");
+  });
+
+  document.getElementById("next-btn").addEventListener("click", newRound);
+
+  function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function pickFrom(arr) { return arr[randInt(0, arr.length - 1)]; }
+  function pickDifferent(arr, last) {
+    if (arr.length === 1) return arr[0];
+    var choice;
+    do { choice = pickFrom(arr); } while (choice === last);
+    return choice;
+  }
+  var lastDegree = null;
+
+  function buildRound() {
+    var level = LEVELS[settings.level];
+    var degree = level.degrees.length > 1 ? pickDifferent(level.degrees, lastDegree) : level.degrees[0];
+    lastDegree = degree;
+
+    var number = randInt(1, level.max);
+    var lower = Math.floor(number / degree) * degree;
+    var upper = lower + degree;
+    var remainder = number - lower;
+    var answer = (remainder * 2 >= degree) ? upper : lower;
+    var step = degree / 10;
+    var beforeIdx = Math.floor(remainder / step);
+    var before = lower + beforeIdx * step;
+    var after = before + step;
+
+    return {
+      number: number, degree: degree, lower: lower, upper: upper, step: step,
+      before: before, after: after, answer: answer, revealed: false
+    };
+  }
+
+  function newRound() {
+    clearReplayTimers();
+    round = buildRound();
+    renderRound();
+  }
+
+  function renderRound() {
+    var word = DEGREE_WORDS[round.degree];
+    document.getElementById("question-text").innerHTML =
+      "Round <span class='target-num'>" + fmt(round.number) + "</span> to the nearest <span class='degree-word'>" + word + "</span>.";
+
+    var input = document.getElementById("answer-input");
+    input.value = "";
+    input.disabled = false;
+    input.classList.remove("correct", "wrong");
+
+    var feedback = document.getElementById("feedback-line");
+    feedback.classList.add("hidden");
+    feedback.textContent = "";
+    feedback.classList.remove("correct", "wrong");
+
+    var revealBtn = document.getElementById("reveal-btn");
+    revealBtn.disabled = false;
+    revealBtn.textContent = "Reveal";
+
+    document.getElementById("rl-wrap").classList.add("hidden");
+    document.getElementById("replay-btn").classList.add("hidden");
+
+    input.focus();
+  }
+
+  function clearReplayTimers() {
+    replayTimers.forEach(function (t) { clearTimeout(t); });
+    replayTimers = [];
+  }
+
+  function buildNumberLine() {
+    var line = document.getElementById("rl-line");
+    line.innerHTML = "";
+    line.classList.remove("show");
+
+    // 11 ticks: index 0 (lower multiple) .. index 10 (upper multiple)
+    for (var i = 0; i <= 10; i++) {
+      var value = round.lower + i * round.step;
+      var tick = document.createElement("div");
+      tick.className = "rl-tick";
+      tick.style.left = (i / 10 * 100) + "%";
+
+      var label = document.createElement("span");
+      label.className = "rl-tick-label";
+      label.textContent = fmt(value);
+
+      if (i === 0) {
+        label.classList.add("end-label");
+        label.dataset.end = "0";
+      } else if (i === 10) {
+        label.classList.add("end-label");
+        label.dataset.end = "1";
+      } else if (value === round.before || value === round.after) {
+        label.dataset.inner = "1";
+      }
+      if (value === round.answer && (i === 0 || i === 10)) {
+        label.classList.add("answer-box");
+        label.dataset.answer = "1";
+      }
+
+      tick.appendChild(label);
+      line.appendChild(tick);
+    }
+
+    var marker = document.createElement("div");
+    marker.className = "rl-marker";
+    marker.id = "rl-marker";
+    marker.style.left = (round.number - round.lower) / round.degree * 100 + "%";
+    marker.innerHTML =
+      "<span class='rl-marker-num'>" + fmt(round.number) + "</span>" +
+      "<span class='rl-marker-arrow'>&#9660;</span>";
+    line.appendChild(marker);
+  }
+
+  function playRevealAnimation() {
+    clearReplayTimers();
+    var line = document.getElementById("rl-line");
+    var labels = line.querySelectorAll(".rl-tick-label");
+
+    labels.forEach(function (l) { l.classList.remove("show", "pulse"); });
+
+    var STEP_MS = 850;
+    var t = 0;
+
+    replayTimers.push(setTimeout(function () { line.classList.add("show"); }, t));
+
+    t += STEP_MS;
+    replayTimers.push(setTimeout(function () {
+      line.querySelectorAll('[data-end="0"]').forEach(function (l) { l.classList.add("show"); });
+    }, t));
+
+    t += STEP_MS;
+    replayTimers.push(setTimeout(function () {
+      line.querySelectorAll('[data-end="1"]').forEach(function (l) { l.classList.add("show"); });
+    }, t));
+
+    t += STEP_MS;
+    replayTimers.push(setTimeout(function () {
+      line.querySelectorAll('[data-inner="1"]').forEach(function (l) { l.classList.add("show"); });
+    }, t));
+
+    t += STEP_MS;
+    replayTimers.push(setTimeout(function () {
+      var marker = document.getElementById("rl-marker");
+      if (marker) marker.classList.add("show");
+    }, t));
+
+    t += STEP_MS;
+    replayTimers.push(setTimeout(function () {
+      line.querySelectorAll('[data-answer="1"]').forEach(function (l) { l.classList.add("show", "pulse"); });
+      document.getElementById("replay-btn").classList.remove("hidden");
+    }, t));
+  }
+
+  document.getElementById("reveal-btn").addEventListener("click", function () {
+    if (round.revealed) return;
+    round.revealed = true;
+
+    var input = document.getElementById("answer-input");
+    var raw = input.value.replace(/[,\s]/g, "");
+    var got = parseInt(raw, 10);
+    input.disabled = true;
+
+    var feedback = document.getElementById("feedback-line");
+    feedback.classList.remove("hidden");
+
+    score.attempted++;
+    if (got === round.answer) {
+      input.classList.add("correct");
+      feedback.classList.add("correct");
+      feedback.textContent = "Correct!";
+      score.correct++; score.streak++;
+      if (score.streak > score.best) { score.best = score.streak; persistBest(); }
+    } else {
+      input.classList.add("wrong");
+      feedback.classList.add("wrong");
+      feedback.textContent = raw === ""
+        ? "The answer is " + fmt(round.answer) + "."
+        : "You wrote " + fmt(got || 0) + " — the answer is " + fmt(round.answer) + ".";
+      score.streak = 0;
+    }
+    updateStats();
+
+    this.disabled = true;
+    this.textContent = "Revealed";
+
+    document.getElementById("rl-wrap").classList.remove("hidden");
+    buildNumberLine();
+    playRevealAnimation();
+  });
+
+  document.getElementById("replay-btn").addEventListener("click", playRevealAnimation);
+
+  function updateStats() {
+    document.getElementById("stat-correct").textContent = score.correct;
+    document.getElementById("stat-attempted").textContent = score.attempted;
+    document.getElementById("stat-streak").textContent = score.streak;
+    document.getElementById("stat-best").textContent = score.best;
+  }
+
+  function persistBest() {
+    try { localStorage.setItem("rtn-best-streak", String(score.best)); } catch (e) { /* ignore */ }
+  }
+
+  updateStats();
+})();
+</script>
+</body>
+</html>

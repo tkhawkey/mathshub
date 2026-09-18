@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Line Detective</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;600;700&display=swap">
+<style>
+  :root {
+    --paper: #F6F4F8;
+    --card: #FFFFFF;
+    --ink: #1E2027;
+    --ink-soft: #5C5A66;
+    --brand: #7A4C8C;
+    --brand-soft: #EFE2F2;
+    --accent: #DD6B27;
+    --accent-ink: #FFFFFF;
+    --correct: #2F9E5B;
+    --correct-bg: #E5F6EC;
+    --wrong: #D6455B;
+    --wrong-bg: #FBE7EA;
+    --border: #DAD5E0;
+    --shadow: none;
+    --focus: #7A4C8C;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1E1826;
+      --card: #29202F;
+      --ink: #F1ECF5;
+      --ink-soft: #BDB2C7;
+      --brand: #C79BD6;
+      --brand-soft: #3A2C42;
+      --accent: #E8863F;
+      --accent-ink: #2A1500;
+      --correct: #4FCB84;
+      --correct-bg: #163326;
+      --wrong: #E8768A;
+      --wrong-bg: #3A1F24;
+      --border: #3E3346;
+      --focus: #C79BD6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1E1826;
+    --card: #29202F;
+    --ink: #F1ECF5;
+    --ink-soft: #BDB2C7;
+    --brand: #C79BD6;
+    --brand-soft: #3A2C42;
+    --accent: #E8863F;
+    --accent-ink: #2A1500;
+    --correct: #4FCB84;
+    --correct-bg: #163326;
+    --wrong: #E8768A;
+    --wrong-bg: #3A1F24;
+    --border: #3E3346;
+    --focus: #C79BD6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 27px,
+        var(--brand-soft) 27px,
+        var(--brand-soft) 28px
+      ),
+      var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  .wrap {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: clamp(20px, 3vw, 44px) clamp(16px, 4vw, 40px) 60px;
+  }
+
+  header.hero {
+    margin-bottom: 24px;
+  }
+
+  .masthead {
+    background: var(--brand);
+    color: #fff;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 16px;
+    margin: 0 0 22px;
+    max-width: 56ch;
+  }
+
+  .motif {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    padding-top: 10px;
+    opacity: 0.6;
+    max-width: 340px;
+  }
+  .motif::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 15px;
+    height: 2px;
+    background: var(--ink);
+  }
+  .motif .m-tick {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .motif .m-mark { width: 2px; height: 12px; background: var(--ink); margin-top: 9px; }
+  .motif .m-label { font-family: 'Space Grotesk', sans-serif; font-size: 12px; color: var(--ink); font-weight: 700; }
+  .motif .m-label.blank { color: var(--ink-soft); font-weight: 400; }
+
+  .panel {
+    position: relative;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 26px 22px 24px;
+    margin-bottom: 22px;
+  }
+
+  .tab {
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: var(--brand);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 12px;
+    border-radius: 5px;
+  }
+
+  fieldset {
+    border: none;
+    margin: 0 0 20px;
+    padding: 0;
+  }
+  fieldset:last-of-type { margin-bottom: 8px; }
+
+  legend {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 10px;
+    padding: 0;
+  }
+
+  .level-hint {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 10px 0 0;
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pill {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 9px 16px;
+    border: 2px solid var(--border);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
+  }
+  .pill:hover { border-color: var(--brand); }
+  .pill:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .pill.active {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+  }
+
+  .primary-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    padding: 13px 26px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 6px;
+  }
+  .primary-btn:hover { filter: brightness(1.05); }
+  .primary-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .primary-btn:disabled { opacity: .5; cursor: not-allowed; }
+
+  .ghost-btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    background: transparent;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .ghost-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .ghost-btn:hover { background: var(--brand-soft); }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: transparent;
+    margin-bottom: 18px;
+  }
+  .home-link:hover { background: var(--brand-soft); }
+  .home-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  .hidden { display: none !important; }
+
+  /* --- game screen --- */
+
+  .toprow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .stats {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .stat {
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    text-align: center;
+    min-width: 84px;
+  }
+  .stat .num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 20px;
+    display: block;
+  }
+  .stat .lbl {
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+
+  .question-meta {
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+  }
+  .question-meta strong { color: var(--ink); }
+
+  .hint-box {
+    background: var(--brand-soft);
+    border: 2px solid var(--brand);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    margin-bottom: 16px;
+  }
+  .hint-box .step {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    color: var(--brand);
+  }
+
+  .track-scroll {
+    overflow-x: auto;
+    padding: 10px 4px 4px;
+    margin-bottom: 8px;
+  }
+
+  .numberline {
+    position: relative;
+    min-height: 160px;
+  }
+  .numberline::before {
+    content: "";
+    position: absolute;
+    left: 60px; right: 60px; top: 40px;
+    height: 2px;
+    background: var(--ink);
+  }
+
+  .tick {
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .tick::before {
+    content: "";
+    width: 2px;
+    height: 20px;
+    background: var(--ink);
+    margin-top: 30px;
+  }
+
+  .tick .given-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(14px, 3.4vw, 17px);
+    color: var(--ink);
+    margin-top: 8px;
+    white-space: nowrap;
+  }
+
+  .reveal-box {
+    margin-top: 10px;
+    min-width: clamp(38px, 8vw, 56px);
+    padding: 8px 6px;
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    background: var(--paper);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(12px, 3vw, 15px);
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .reveal-box:hover { border-color: var(--brand); color: var(--brand); }
+  .reveal-box:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .reveal-box.open {
+    cursor: default;
+    color: var(--ink);
+    border-style: solid;
+  }
+
+  .self-check {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .self-check button {
+    font-size: 15px;
+    line-height: 1;
+    padding: 5px 8px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+  }
+  .self-check button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .self-check .yes:hover { border-color: var(--correct); }
+  .self-check .no:hover { border-color: var(--wrong); }
+  .self-check.locked button { opacity: .4; pointer-events: none; }
+  .self-check button.chosen.yes { border-color: var(--correct); background: var(--correct-bg); }
+  .self-check button.chosen.no { border-color: var(--wrong); background: var(--wrong-bg); }
+
+  .type-input {
+    margin-top: 10px;
+    width: clamp(38px, 8vw, 76px);
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(12px, 3vw, 15px);
+    text-align: center;
+    padding: 9px 4px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--ink);
+  }
+  .type-input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-color: var(--brand); }
+  .type-input.correct { border-color: var(--correct); background: var(--correct-bg); }
+  .type-input.wrong { border-color: var(--wrong); background: var(--wrong-bg); }
+  .type-input:disabled { color: var(--ink); -webkit-text-fill-color: var(--ink); opacity: 1; }
+
+  .working {
+    margin-top: 6px;
+    font-size: 11px;
+    color: var(--wrong);
+    max-width: 100px;
+    text-align: center;
+  }
+
+  .actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+  }
+
+  .working-summary {
+    background: var(--wrong-bg);
+    border: 2px solid var(--wrong);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 14px;
+    margin-top: 18px;
+  }
+  .working-summary.success {
+    background: var(--correct-bg);
+    border-color: var(--correct);
+  }
+  .working-summary strong { font-family: 'Space Grotesk', sans-serif; }
+
+  footer.note {
+    color: var(--ink-soft);
+    font-size: 12px;
+    margin-top: 30px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="home-link" href="index.html">&larr; All resources</a>
+
+  <header class="hero">
+    <div class="masthead">
+      <h1>Number Line Detective</h1>
+    </div>
+    <p class="subtitle">Work out the missing labels on a number line: find the difference, divide it by the number of gaps, then fill in every point.</p>
+    <div class="motif" aria-hidden="true">
+      <div class="m-tick"><span class="m-mark"></span><span class="m-label">24,000</span></div>
+      <div class="m-tick"><span class="m-mark"></span><span class="m-label blank">?</span></div>
+      <div class="m-tick"><span class="m-mark"></span><span class="m-label blank">?</span></div>
+      <div class="m-tick"><span class="m-mark"></span><span class="m-label blank">?</span></div>
+      <div class="m-tick"><span class="m-mark"></span><span class="m-label">25,000</span></div>
+    </div>
+  </header>
+
+  <!-- SETUP SCREEN -->
+  <section id="setup-screen" class="panel">
+    <span class="tab">Set up</span>
+
+    <fieldset id="level-field">
+      <legend>Difficulty</legend>
+      <div class="pill-row" id="level-pills">
+        <button class="pill active" data-value="1">1 &middot; Warm-up</button>
+        <button class="pill" data-value="2">2 &middot; Building up</button>
+        <button class="pill" data-value="3">3 &middot; Stepping up</button>
+        <button class="pill" data-value="4">4 &middot; Getting tricky</button>
+        <button class="pill" data-value="5">5 &middot; Expert</button>
+      </div>
+      <p class="level-hint" id="level-hint"></p>
+    </fieldset>
+
+    <fieldset id="mode-field">
+      <legend>How do you want to practise?</legend>
+      <div class="pill-row" id="mode-pills">
+        <button class="pill active" data-value="reveal">Reveal &amp; self-check</button>
+        <button class="pill" data-value="type">Type the labels</button>
+        <button class="pill" data-value="mix">Mix it up</button>
+      </div>
+    </fieldset>
+
+    <button class="primary-btn" id="start-btn">Start practising</button>
+  </section>
+
+  <!-- GAME SCREEN -->
+  <section id="game-screen" class="hidden">
+    <div class="toprow">
+      <button class="ghost-btn" id="settings-btn">Change settings</button>
+      <div class="stats">
+        <div class="stat"><span class="num" id="stat-correct">0</span><span class="lbl">correct</span></div>
+        <div class="stat"><span class="num" id="stat-attempted">0</span><span class="lbl">attempted</span></div>
+        <div class="stat"><span class="num" id="stat-streak">0</span><span class="lbl">streak</span></div>
+        <div class="stat"><span class="num" id="stat-best">0</span><span class="lbl">best streak</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <span class="tab" id="mode-tab">Reveal &amp; self-check</span>
+      <p class="question-meta">Start: <strong id="meta-start"></strong> &nbsp;·&nbsp; End: <strong id="meta-end"></strong></p>
+
+      <button class="ghost-btn" id="hint-btn" style="margin-bottom:14px;">Show me the method</button>
+      <div class="hint-box hidden" id="hint-box"></div>
+
+      <div class="track-scroll">
+        <div class="numberline" id="numberline"></div>
+      </div>
+
+      <div id="reveal-help" class="question-meta hidden">Tap a box to reveal that point, then mark whether you had it right.</div>
+
+      <div id="working-summary" class="working-summary hidden"></div>
+
+      <div class="actions">
+        <button class="primary-btn hidden" id="check-btn">Check answers</button>
+        <button class="ghost-btn" id="next-btn">New number line</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="note">Numbers regenerate every round, so there's always a fresh line to work out.</footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var settings = { level: "1", mode: "reveal" };
+  var score = { correct: 0, attempted: 0, streak: 0, best: 0 };
+  var round = null;
+
+  var LEVELS = {
+    "1": { desc: "Round hundreds and thousands, e.g. 200 to 300 or 2,000 to 3,000.", gaps: [100, 1000], offset: "clean", intervals: [10] },
+    "2": { desc: "Round hundreds, thousands and ten-thousands.", gaps: [100, 1000, 10000], offset: "clean", intervals: [5, 10] },
+    "3": { desc: "Ten-thousands with a less tidy start number, e.g. 145,600 to 155,600.", gaps: [10000], offset: "hundreds", intervals: [4, 5, 10] },
+    "4": { desc: "Bigger gaps and less tidy start numbers.", gaps: [10000, 100000], offset: "hundreds", intervals: [4, 5, 10] },
+    "5": { desc: "Any gap size, any start number \u2014 anything goes.", gaps: [1000, 10000, 100000], offset: "tens", intervals: [4, 5, 10] }
+  };
+
+  try {
+    var savedBest = localStorage.getItem("nld-best-streak");
+    if (savedBest) score.best = parseInt(savedBest, 10) || 0;
+  } catch (e) { /* storage unavailable, carry on without persistence */ }
+
+  function fmt(n) { return n.toLocaleString("en-GB"); }
+
+  function wirePillGroup(containerId, key) {
+    var container = document.getElementById(containerId);
+    container.querySelectorAll(".pill").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        container.querySelectorAll(".pill").forEach(function (b) { b.classList.remove("active"); });
+        btn.classList.add("active");
+        settings[key] = btn.dataset.value;
+      });
+    });
+  }
+  function updateLevelHint() {
+    document.getElementById("level-hint").textContent = LEVELS[settings.level].desc;
+  }
+  wirePillGroup("level-pills", "level");
+  wirePillGroup("mode-pills", "mode");
+  document.getElementById("level-pills").addEventListener("click", updateLevelHint);
+  updateLevelHint();
+
+  document.getElementById("start-btn").addEventListener("click", function () {
+    document.getElementById("setup-screen").classList.add("hidden");
+    document.getElementById("game-screen").classList.remove("hidden");
+    newRound();
+  });
+
+  document.getElementById("settings-btn").addEventListener("click", function () {
+    document.getElementById("game-screen").classList.add("hidden");
+    document.getElementById("setup-screen").classList.remove("hidden");
+  });
+
+  document.getElementById("next-btn").addEventListener("click", newRound);
+  document.getElementById("hint-btn").addEventListener("click", function () {
+    var box = document.getElementById("hint-box");
+    box.classList.toggle("hidden");
+    this.textContent = box.classList.contains("hidden") ? "Show me the method" : "Hide the method";
+  });
+
+  function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+  function pickFrom(arr) { return arr[randInt(0, arr.length - 1)]; }
+  function pickDifferent(arr, last) {
+    if (arr.length === 1) return arr[0];
+    var choice;
+    do { choice = pickFrom(arr); } while (choice === last);
+    return choice;
+  }
+  var lastIntervals = null;
+
+  function startOffset(gap, style) {
+    if (style === "clean") return 0;
+    var unit = style === "hundreds" ? 100 : 10;
+    var steps = Math.floor(gap / unit) - 1;
+    if (steps < 1) return 0;
+    return randInt(1, steps) * unit;
+  }
+
+  function buildRound() {
+    var level = LEVELS[settings.level];
+    var gap = pickFrom(level.gaps);
+    var intervals = level.intervals.length > 1 ? pickDifferent(level.intervals, lastIntervals) : level.intervals[0];
+    lastIntervals = intervals;
+    var step = gap / intervals;
+
+    var maxMultiplier = { 100: 99, 1000: 90, 10000: 90, 100000: 9 }[gap];
+    var startMultiple = randInt(0, maxMultiplier);
+    var start = startMultiple * gap + startOffset(gap, level.offset);
+    var end = start + gap;
+
+    var values = [];
+    for (var i = 0; i <= intervals; i++) values.push(start + i * step);
+
+    var roundMode = settings.mode === "mix" ? pickFrom(["reveal", "type"]) : settings.mode;
+
+    return { start: start, end: end, gap: gap, intervals: intervals, step: step, values: values, mode: roundMode, checked: false };
+  }
+
+  function newRound() {
+    round = buildRound();
+    renderRound();
+  }
+
+  function renderRound() {
+    document.getElementById("meta-start").textContent = fmt(round.start);
+    document.getElementById("meta-end").textContent = fmt(round.end);
+    document.getElementById("mode-tab").textContent = round.mode === "reveal" ? "Reveal & self-check" : "Type the labels";
+
+    document.getElementById("hint-box").classList.add("hidden");
+    document.getElementById("hint-btn").textContent = "Show me the method";
+    document.getElementById("hint-box").innerHTML =
+      "Difference: " + fmt(round.end) + " &minus; " + fmt(round.start) + " = <span class='step'>" + fmt(round.gap) + "</span><br>" +
+      "This line has " + round.intervals + " intervals, so we do " + fmt(round.gap) + " &divide; " + round.intervals + " = <span class='step'>" + fmt(round.step) + "</span> per step.";
+
+    document.getElementById("working-summary").classList.add("hidden");
+    document.getElementById("working-summary").classList.remove("success");
+    document.getElementById("working-summary").innerHTML = "";
+
+    var track = document.getElementById("numberline");
+    track.innerHTML = "";
+
+    var checkBtn = document.getElementById("check-btn");
+    var revealHelp = document.getElementById("reveal-help");
+
+    if (round.mode === "reveal") {
+      checkBtn.classList.add("hidden");
+      revealHelp.classList.remove("hidden");
+    } else {
+      checkBtn.classList.remove("hidden");
+      checkBtn.disabled = false;
+      checkBtn.textContent = "Check answers";
+      revealHelp.classList.add("hidden");
+    }
+
+    round.values.forEach(function (val, i) {
+      var tick = document.createElement("div");
+      tick.className = "tick";
+      tick.style.left = "calc(60px + (100% - 120px) * " + (i / round.intervals) + ")";
+      tick.style.transform = "translateX(-50%)";
+
+      if (i === 0 || i === round.intervals) {
+        var lbl = document.createElement("span");
+        lbl.className = "given-label";
+        lbl.textContent = fmt(val);
+        tick.appendChild(lbl);
+      } else if (round.mode === "reveal") {
+        var box = document.createElement("button");
+        box.className = "reveal-box";
+        box.type = "button";
+        box.textContent = "?";
+        box.addEventListener("click", function () {
+          if (box.classList.contains("open")) return;
+          box.classList.add("open");
+          box.textContent = fmt(val);
+          selfCheck.classList.remove("hidden");
+        });
+        tick.appendChild(box);
+
+        var selfCheck = document.createElement("div");
+        selfCheck.className = "self-check hidden";
+        var yes = document.createElement("button");
+        yes.className = "yes"; yes.type = "button"; yes.textContent = "\u2713"; yes.setAttribute("aria-label", "I had it right");
+        var no = document.createElement("button");
+        no.className = "no"; no.type = "button"; no.textContent = "\u2717"; no.setAttribute("aria-label", "I had it wrong");
+        [yes, no].forEach(function (b) {
+          b.addEventListener("click", function () {
+            if (selfCheck.classList.contains("locked")) return;
+            selfCheck.classList.add("locked");
+            b.classList.add("chosen");
+            score.attempted++;
+            if (b === yes) {
+              score.correct++; score.streak++;
+              if (score.streak > score.best) { score.best = score.streak; persistBest(); }
+            } else {
+              score.streak = 0;
+            }
+            updateStats();
+          });
+        });
+        selfCheck.appendChild(yes); selfCheck.appendChild(no);
+        tick.appendChild(selfCheck);
+      } else {
+        var input = document.createElement("input");
+        input.className = "type-input";
+        input.type = "text";
+        input.inputMode = "numeric";
+        input.setAttribute("aria-label", "Point " + (i + 1));
+        input.dataset.expected = val;
+        input.dataset.index = i;
+        tick.appendChild(input);
+
+        var working = document.createElement("div");
+        working.className = "working hidden";
+        tick.appendChild(working);
+      }
+
+      track.appendChild(tick);
+    });
+  }
+
+  document.getElementById("check-btn").addEventListener("click", function () {
+    if (round.checked) return;
+    round.checked = true;
+    this.disabled = true;
+    this.textContent = "Checked";
+
+    var inputs = document.querySelectorAll("#numberline .type-input");
+    var wrongCount = 0;
+
+    inputs.forEach(function (input) {
+      var expected = parseInt(input.dataset.expected, 10);
+      var raw = input.value.replace(/[,\s]/g, "");
+      var got = parseInt(raw, 10);
+      var workingEl = input.parentElement.querySelector(".working");
+      input.disabled = true;
+      score.attempted++;
+
+      if (got === expected) {
+        input.classList.add("correct");
+        score.correct++; score.streak++;
+        if (score.streak > score.best) { score.best = score.streak; persistBest(); }
+      } else {
+        input.classList.add("wrong");
+        input.value = raw === "" ? "" : raw;
+        wrongCount++;
+        score.streak = 0;
+        var i = parseInt(input.dataset.index, 10);
+        workingEl.textContent = fmt(round.start) + " + " + i + " \u00d7 " + fmt(round.step) + " = " + fmt(expected) + (raw ? " (you wrote " + fmt(got || 0) + ")" : " (left blank)");
+        workingEl.classList.remove("hidden");
+      }
+    });
+
+    updateStats();
+
+    var summary = document.getElementById("working-summary");
+    if (wrongCount > 0) {
+      summary.classList.remove("success");
+      summary.innerHTML = "<strong>How to work it out:</strong> difference = " + fmt(round.end) + " &minus; " + fmt(round.start) + " = " + fmt(round.gap) +
+        ". Divide by " + round.intervals + " intervals: " + fmt(round.gap) + " \u00f7 " + round.intervals + " = " + fmt(round.step) + " per step. " +
+        "Each point = start + (step number \u00d7 " + fmt(round.step) + ").";
+      summary.classList.remove("hidden");
+    } else {
+      summary.classList.add("success");
+      summary.innerHTML = "<strong>Every point correct.</strong> Nice work \u2014 try a new number line.";
+      summary.classList.remove("hidden");
+    }
+  });
+
+  function updateStats() {
+    document.getElementById("stat-correct").textContent = score.correct;
+    document.getElementById("stat-attempted").textContent = score.attempted;
+    document.getElementById("stat-streak").textContent = score.streak;
+    document.getElementById("stat-best").textContent = score.best;
+  }
+
+  function persistBest() {
+    try { localStorage.setItem("nld-best-streak", String(score.best)); } catch (e) { /* ignore */ }
+  }
+
+  updateStats();
+})();
+</script>
+</body>
+</html>

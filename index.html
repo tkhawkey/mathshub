@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maths Practice Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;600;700&display=swap">
+<style>
+  :root {
+    --paper: #F6F4F8;
+    --card: #FFFFFF;
+    --ink: #1E2027;
+    --ink-soft: #5C5A66;
+    --brand: #7A4C8C;
+    --brand-soft: #EFE2F2;
+    --accent: #DD6B27;
+    --accent-ink: #FFFFFF;
+    --correct: #2F9E5B;
+    --correct-bg: #E5F6EC;
+    --wrong: #D6455B;
+    --wrong-bg: #FBE7EA;
+    --border: #DAD5E0;
+    --shadow: none;
+    --focus: #7A4C8C;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1E1826;
+      --card: #29202F;
+      --ink: #F1ECF5;
+      --ink-soft: #BDB2C7;
+      --brand: #C79BD6;
+      --brand-soft: #3A2C42;
+      --accent: #E8863F;
+      --accent-ink: #2A1500;
+      --correct: #4FCB84;
+      --correct-bg: #163326;
+      --wrong: #E8768A;
+      --wrong-bg: #3A1F24;
+      --border: #3E3346;
+      --focus: #C79BD6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1E1826;
+    --card: #29202F;
+    --ink: #F1ECF5;
+    --ink-soft: #BDB2C7;
+    --brand: #C79BD6;
+    --brand-soft: #3A2C42;
+    --accent: #E8863F;
+    --accent-ink: #2A1500;
+    --correct: #4FCB84;
+    --correct-bg: #163326;
+    --wrong: #E8768A;
+    --wrong-bg: #3A1F24;
+    --border: #3E3346;
+    --focus: #C79BD6;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 27px,
+        var(--brand-soft) 27px,
+        var(--brand-soft) 28px
+      ),
+      var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  .wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: clamp(20px, 3vw, 44px) clamp(16px, 4vw, 40px) 60px;
+  }
+
+  header.hero { margin-bottom: 28px; }
+
+  .masthead {
+    background: var(--brand);
+    color: #fff;
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin-bottom: 16px;
+  }
+
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(24px, 5vw, 34px);
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+    color: #fff;
+  }
+
+  .subtitle {
+    color: var(--ink-soft);
+    font-size: 16px;
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    position: relative;
+    text-align: left;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 26px 22px 22px;
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--ink);
+    transition: border-color .15s ease, transform .1s ease;
+  }
+  .card:hover { border-color: var(--brand); transform: translateY(-2px); }
+  .card:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  .card .tab {
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: var(--brand);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 12px;
+    border-radius: 5px;
+  }
+
+  .card h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin: 6px 0 10px;
+  }
+
+  .card p {
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+
+  .card .open-hint {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--brand);
+  }
+
+  /* motif matching the number-line archetype, used generically as a card icon */
+  .motif {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    padding-top: 6px;
+    opacity: 0.75;
+    max-width: 220px;
+    margin-bottom: 4px;
+  }
+  .motif::before {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; top: 12px;
+    height: 2px;
+    background: var(--ink);
+  }
+  .motif .m-tick { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .motif .m-mark { width: 2px; height: 10px; background: var(--ink); margin-top: 7px; }
+  .motif .m-label { font-family: 'Space Grotesk', sans-serif; font-size: 10px; color: var(--ink); font-weight: 700; }
+  .motif .m-label.blank { color: var(--ink-soft); font-weight: 400; }
+
+  .icon-row {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .icon-dot {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 10px;
+  }
+
+  /* ---- Modal ---- */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 16, 24, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+  .modal-backdrop.hidden { display: none; }
+
+  .modal {
+    position: relative;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 30px 26px 26px;
+    max-width: 460px;
+    width: 100%;
+  }
+
+  .modal .tab {
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: var(--brand);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 12px;
+    border-radius: 5px;
+  }
+
+  .modal h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin: 4px 0 12px;
+  }
+
+  .modal p {
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin: 0 0 22px;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .primary-btn {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    padding: 13px 26px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .primary-btn:hover { filter: brightness(1.05); }
+  .primary-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  .ghost-btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    background: transparent;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .ghost-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .ghost-btn:hover { background: var(--brand-soft); }
+
+  footer.note {
+    color: var(--ink-soft);
+    font-size: 12px;
+    margin-top: 34px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="masthead">
+      <h1>Maths Practice Hub</h1>
+    </div>
+    <p class="subtitle">Pick a resource below to find out what it does, then start practising.</p>
+  </header>
+
+  <div class="card-grid">
+
+    <button class="card" data-resource="number-line">
+      <span class="tab">Number lines</span>
+      <div class="motif" aria-hidden="true">
+        <div class="m-tick"><span class="m-mark"></span><span class="m-label">24,000</span></div>
+        <div class="m-tick"><span class="m-mark"></span><span class="m-label blank">?</span></div>
+        <div class="m-tick"><span class="m-mark"></span><span class="m-label blank">?</span></div>
+        <div class="m-tick"><span class="m-mark"></span><span class="m-label">25,000</span></div>
+      </div>
+      <h2>Number Line Detective</h2>
+      <p>Work out the missing labels on a number line using the difference, divide, and label method.</p>
+      <span class="open-hint">Tap to find out more &rarr;</span>
+    </button>
+
+    <button class="card" data-resource="place-value">
+      <span class="tab">Place value</span>
+      <div class="icon-row" aria-hidden="true">
+        <div class="icon-dot" style="background:#1583a8;">Th</div>
+        <div class="icon-dot" style="background:#3a9e53;">H</div>
+        <div class="icon-dot" style="background:#e8a512;">T</div>
+        <div class="icon-dot" style="background:#dd5137;">O</div>
+      </div>
+      <h2>Place Value Practice</h2>
+      <p>Watch place value counters on a chart and race the clock to work out addition and subtraction calculations.</p>
+      <span class="open-hint">Tap to find out more &rarr;</span>
+    </button>
+
+    <button class="card" data-resource="number-words">
+      <span class="tab">Number words</span>
+      <div class="icon-row" aria-hidden="true">
+        <div class="icon-dot" style="background:#7A4C8C;">123</div>
+        <div class="icon-dot" style="background:#DD6B27;">Aa</div>
+      </div>
+      <h2>Number Words</h2>
+      <p>Practise reading big numbers aloud, then check how they're written out in words.</p>
+      <span class="open-hint">Tap to find out more &rarr;</span>
+    </button>
+
+    <button class="card" data-resource="rounding">
+      <span class="tab">Rounding</span>
+      <div class="motif" aria-hidden="true">
+        <div class="m-tick"><span class="m-mark"></span><span class="m-label blank">4,500</span></div>
+        <div class="m-tick"><span class="m-mark"></span><span class="m-label blank">4,533</span></div>
+        <div class="m-tick"><span class="m-mark"></span><span class="m-label">4,600</span></div>
+      </div>
+      <h2>Rounding Practice</h2>
+      <p>Round numbers to the nearest 10, 100 or 1,000, then watch a number line reveal how it works.</p>
+      <span class="open-hint">Tap to find out more &rarr;</span>
+    </button>
+
+  </div>
+
+  <footer class="note">Click a resource to see how it works before you start.</footer>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop hidden" id="modal-backdrop">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <span class="tab">How to use this resource</span>
+    <h2 id="modal-title"></h2>
+    <p id="modal-body"></p>
+    <div class="modal-actions">
+      <button class="ghost-btn" id="modal-back">Back</button>
+      <a class="primary-btn" id="modal-start" href="#">Start</a>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var RESOURCES = {
+    "number-line": {
+      title: "Number Line Detective",
+      body: "You'll see a number line with the start and end numbers given, but the points in between are missing. Work out the difference between the start and end values, then divide that difference by the number of intervals. Use that to find every missing label. You can reveal each answer and mark whether you got it right, or type the numbers in and check them all at the end.",
+      href: "labeling_number_lines.html"
+    },
+    "place-value": {
+      title: "Place Value Practice",
+      body: "A calculation like 4,300 + 200 will appear above a place value chart full of counters. Try to work out the answer before the timer runs out — then watch the counters combine or exchange (carrying and borrowing) to show you how the answer is made.",
+      href: "place_value_practice.html"
+    },
+    "number-words": {
+      title: "Number Words",
+      body: "A number will appear on screen. Say it out loud the way you'd read it or write it down in words, then press “Show in Words” to check whether you were right. Press Generate New Number for another go.",
+      href: "place_value_words.html"
+    },
+    "rounding": {
+      title: "Rounding Practice",
+      body: "You'll be asked to round a number to the nearest 10, 100 or 1,000. Type your answer in the box, then press Reveal — a number line will build up step by step to show you the two nearest multiples, exactly where your number sits between them, and which one it rounds to.",
+      href: "rounding_practice.html"
+    }
+  };
+
+  var backdrop = document.getElementById("modal-backdrop");
+  var titleEl = document.getElementById("modal-title");
+  var bodyEl = document.getElementById("modal-body");
+  var startBtn = document.getElementById("modal-start");
+  var backBtn = document.getElementById("modal-back");
+  var lastTrigger = null;
+
+  function openModal(key) {
+    var resource = RESOURCES[key];
+    if (!resource) return;
+    titleEl.textContent = resource.title;
+    bodyEl.textContent = resource.body;
+    startBtn.setAttribute("href", resource.href);
+    backdrop.classList.remove("hidden");
+    backBtn.focus();
+  }
+
+  function closeModal() {
+    backdrop.classList.add("hidden");
+    if (lastTrigger) lastTrigger.focus();
+  }
+
+  document.querySelectorAll(".card").forEach(function (card) {
+    card.addEventListener("click", function () {
+      lastTrigger = card;
+      openModal(card.dataset.resource);
+    });
+  });
+
+  backBtn.addEventListener("click", closeModal);
+
+  backdrop.addEventListener("click", function (e) {
+    if (e.target === backdrop) closeModal();
+  });
+
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && !backdrop.classList.contains("hidden")) closeModal();
+  });
+})();
+</script>
+</body>
+</html>

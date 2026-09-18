@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Place Value Practice</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;600;700&display=swap">
+<style>
+  :root {
+    --paper: #F6F4F8;
+    --card: #FFFFFF;
+    --ink: #1E2027;
+    --ink-soft: #5C5A66;
+    --brand: #7A4C8C;
+    --brand-soft: #EFE2F2;
+    --accent: #DD6B27;
+    --accent-ink: #FFFFFF;
+    --correct: #2F9E5B;
+    --correct-bg: #E5F6EC;
+    --wrong: #D6455B;
+    --wrong-bg: #FBE7EA;
+    --border: #DAD5E0;
+    --shadow: none;
+    --focus: #7A4C8C;
+
+    /* Column header colors */
+    --col-m-hdr: #cfd5d6;
+    --col-hth-hdr: #cda17f;
+    --col-tth-hdr: #c8a2d4;
+    --col-th-hdr: #bfe0f5;
+    --col-h-hdr: #b3ddac;
+    --col-t-hdr: #f9d777;
+    --col-o-hdr: #ef8677;
+
+    /* Counter token colors */
+    --token-m: #8d9192;
+    --token-hth: #a06a3f;
+    --token-tth: #935da0;
+    --token-th: #1583a8;
+    --token-h: #3a9e53;
+    --token-t: #e8a512;
+    --token-o: #dd5137;
+
+    --token-size: 48px;
+    --token-gap: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #1E1826;
+      --card: #29202F;
+      --ink: #F1ECF5;
+      --ink-soft: #BDB2C7;
+      --brand: #C79BD6;
+      --brand-soft: #3A2C42;
+      --accent: #E8863F;
+      --accent-ink: #2A1500;
+      --correct: #4FCB84;
+      --correct-bg: #163326;
+      --wrong: #E8768A;
+      --wrong-bg: #3A1F24;
+      --border: #3E3346;
+      --focus: #C79BD6;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #1E1826;
+    --card: #29202F;
+    --ink: #F1ECF5;
+    --ink-soft: #BDB2C7;
+    --brand: #C79BD6;
+    --brand-soft: #3A2C42;
+    --accent: #E8863F;
+    --accent-ink: #2A1500;
+    --correct: #4FCB84;
+    --correct-bg: #163326;
+    --wrong: #E8768A;
+    --wrong-bg: #3A1F24;
+    --border: #3E3346;
+    --focus: #C79BD6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background:
+      repeating-linear-gradient(
+        to bottom,
+        transparent,
+        transparent 27px,
+        var(--brand-soft) 27px,
+        var(--brand-soft) 28px
+      ),
+      var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+  }
+
+  h1, h2, .display-font { font-family: 'Space Grotesk', sans-serif; }
+
+  /* ============ Setup panel ============ */
+  .setup-wrap {
+    width: 100%;
+    max-width: 620px;
+    max-height: 94vh;
+    overflow-y: auto;
+    padding: 4px;
+  }
+
+  .home-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: transparent;
+    margin-bottom: 14px;
+  }
+  .home-link:hover { background: var(--brand-soft); }
+  .home-link:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  .masthead {
+    background: var(--brand);
+    color: #fff;
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+  }
+
+  .panel {
+    position: relative;
+    background: var(--card);
+    color: var(--ink);
+    border: 2px solid var(--border);
+    padding: 26px 22px 24px;
+    border-radius: 10px;
+    width: 100%;
+  }
+
+  .tab {
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: var(--brand);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 3px 12px;
+    border-radius: 5px;
+  }
+
+  .masthead h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(22px, 5vw, 30px);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #fff;
+    margin: 0;
+  }
+
+  p.panel-head {
+    font-size: 15px;
+    color: var(--ink-soft);
+    max-width: 56ch;
+  }
+
+  .group {
+    margin: 0 0 20px;
+  }
+
+  .group-label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  .group-label label { font-size: 14px; font-weight: 700; color: var(--ink); }
+
+  .group-caption {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 8px;
+    line-height: 1.35;
+  }
+
+  /* Segmented pill controls (same visual language as .pill) */
+  .seg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .seg button {
+    flex: 1 1 auto;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 9px 16px;
+    border: 2px solid var(--border);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, color .15s ease;
+    white-space: nowrap;
+  }
+
+  .seg button:hover { border-color: var(--brand); }
+  .seg button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  .seg button.active {
+    background: var(--brand);
+    border-color: var(--brand);
+    color: #fff;
+  }
+
+  /* Fine-tune chip area */
+  .tune-box {
+    background: var(--paper);
+    border: 2px dashed var(--border);
+    border-radius: 8px;
+    padding: 14px 14px;
+    margin-top: 10px;
+  }
+
+  .tune-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .tune-head span {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-soft);
+    text-transform: none;
+  }
+
+  .tune-quick {
+    display: flex;
+    gap: 8px;
+  }
+
+  .tune-quick button {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    border: none;
+    background: none;
+    color: var(--brand);
+    cursor: pointer;
+    padding: 2px 4px;
+  }
+
+  .tune-quick button:hover { text-decoration: underline; }
+
+  .chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chip {
+    padding: 6px 14px;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--ink-soft);
+    user-select: none;
+    transition: all 0.15s;
+  }
+
+  .chip.active {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+  }
+
+  /* Time chips + custom field */
+  .time-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .time-row .chip { min-width: 3.4rem; text-align: center; }
+
+  .time-custom {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  .time-custom input {
+    width: 4.2rem;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 2px solid var(--border);
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: var(--ink);
+    background: var(--card);
+  }
+  .time-custom input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  button.start-btn {
+    width: 100%;
+    padding: 13px 26px;
+    margin-top: 6px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  button.start-btn:hover { filter: brightness(1.05); }
+  button.start-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  /* ============ App screen ============ */
+  .app-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    width: 100vw;
+    height: 100vh;
+    padding: 1.4rem 1.8rem;
+    position: relative;
+  }
+
+  .top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .back-btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    text-decoration: none;
+    background: transparent;
+    color: var(--brand);
+    border: 2px solid var(--brand);
+    padding: 9px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+  .back-btn:hover { background: var(--brand-soft); }
+  .back-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  .stop-btn {
+    background: var(--wrong);
+    color: #fff;
+    border: none;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    z-index: 10;
+  }
+  .stop-btn:hover { filter: brightness(1.05); }
+  .stop-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+
+  /* Place value chart */
+  .pvc-wrapper {
+    width: 100%;
+    max-width: 1100px;
+    height: 56vh;
+    background: var(--card);
+    border-radius: 10px;
+    border: 2px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .pvc-header-row {
+    display: flex;
+    height: 56px;
+    flex-shrink: 0;
+    gap: 2px;
+    padding: 6px 6px 0;
+  }
+
+  .pvc-header-cell {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 1.2rem;
+    border-radius: 8px 8px 0 0;
+  }
+
+  .pvc-body-row {
+    display: flex;
+    flex-grow: 1;
+    background: var(--paper);
+    border-radius: 0 0 8px 8px;
+    margin: 0 6px 6px;
+    gap: 2px;
+  }
+
+  .pvc-column {
+    flex: 1;
+    border-right: 1px solid var(--border);
+    padding: 0.6rem 0.4rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start; /* snap to top, not the bottom */
+    align-items: center;
+    height: 100%;
+  }
+
+  .pvc-column:last-child { border-right: none; }
+
+  /* 2-wide grid, filling left-to-right then top-to-bottom, anchored to the top */
+  .token-grid {
+    display: grid;
+    grid-template-columns: repeat(2, var(--token-size));
+    grid-auto-rows: var(--token-size);
+    gap: var(--token-gap);
+    justify-content: center;
+    align-content: flex-start;
+    width: 100%;
+  }
+
+  .token {
+    width: var(--token-size);
+    height: var(--token-size);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 800;
+    font-size: calc(var(--token-size) * 0.27);
+    line-height: 1;
+    border: 2px solid rgba(0,0,0,0.25);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+    user-select: none;
+  }
+
+  .token.added {
+    box-shadow: 0 0 0 4px var(--accent), 0 0 14px var(--accent);
+    animation: pulseHalo 1.1s infinite alternate;
+  }
+
+  .token.subtract-target {
+    border: 3px solid var(--wrong);
+    animation: pulseRed 0.55s infinite alternate;
+  }
+
+  .token.fade-out { opacity: 0; transform: scale(0.15); }
+
+  .token.pop-in { animation: tokenPopIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+  .token.flying-token { position: fixed; margin: 0; pointer-events: none; z-index: 999; }
+
+  .token.became { animation: tokenBecome 0.2s ease; }
+
+  .token.bursting { animation: tokenBurst 0.2s ease forwards; }
+
+  @keyframes pulseHalo {
+    from { box-shadow: 0 0 0 3px var(--accent), 0 0 6px var(--accent); }
+    to   { box-shadow: 0 0 0 6px var(--accent), 0 0 16px var(--accent); }
+  }
+
+  @keyframes pulseRed {
+    from { transform: scale(1); box-shadow: 0 0 4px var(--wrong); }
+    to   { transform: scale(1.14); box-shadow: 0 0 12px var(--wrong); }
+  }
+
+  @keyframes tokenPopIn {
+    0%   { transform: scale(0); opacity: 0; }
+    70%  { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes tokenBecome {
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.4); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes tokenBurst {
+    0%   { transform: scale(1); opacity: 1; }
+    55%  { transform: scale(1.55); opacity: 1; }
+    100% { transform: scale(0.2); opacity: 0; }
+  }
+
+  /* Display */
+  .display-area {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+  }
+
+  .math-problem {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 5.4vw;
+    font-weight: 700;
+    letter-spacing: 1px;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .answer-display {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 5.4vw;
+    font-weight: 700;
+    color: var(--brand);
+    visibility: hidden;
+    line-height: 1;
+    margin-top: 0.3rem;
+  }
+
+  .answer-display.visible { visibility: visible; }
+
+  /* Timer bar */
+  .timer-container {
+    width: 100%;
+    max-width: 1100px;
+    height: 14px;
+    background: var(--brand-soft);
+    border-radius: 7px;
+    overflow: hidden;
+    margin-bottom: 0.4rem;
+  }
+
+  .timer-bar {
+    height: 100%;
+    width: 100%;
+    background: var(--accent);
+    transform-origin: left;
+  }
+</style>
+</head>
+<body>
+
+<!-- Configuration Panel -->
+<div class="setup-wrap" id="setup-panel">
+  <a class="home-link" href="index.html">&larr; All resources</a>
+
+  <div class="masthead">
+    <h1>Place Value Practice</h1>
+  </div>
+  <p class="panel-head" style="margin-bottom:16px;">Set up today's mental maths loop &mdash; addition and subtraction with place value counters.</p>
+
+  <div class="panel">
+    <span class="tab">Set up</span>
+
+    <div class="group">
+      <div class="group-label"><label>Number range</label></div>
+      <div class="seg" id="range-seg"></div>
+      <div class="group-caption" id="range-caption"></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><label>Calculation</label></div>
+      <div class="seg" id="operation-seg"></div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><label>Number style</label></div>
+      <div class="seg" id="style-seg"></div>
+      <div class="group-caption" id="style-caption"></div>
+      <div class="tune-box" id="tune-box" style="display:none;">
+        <div class="tune-head">
+          <span id="tune-title"></span>
+          <div class="tune-quick">
+            <button type="button" id="tune-all">All</button>
+            <button type="button" id="tune-none">None</button>
+          </div>
+        </div>
+        <div class="chip-group" id="tune-chips"></div>
+      </div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><label>Exchange animation speed</label></div>
+      <div class="seg" id="speed-seg"></div>
+      <div class="group-caption">How long the borrowing and regrouping animations take to play out.</div>
+    </div>
+
+    <div class="group">
+      <div class="group-label"><label>Time per question</label></div>
+      <div class="time-row" id="time-row">
+        <div class="time-custom">
+          <span>seconds:</span>
+          <input type="number" id="time-limit" value="10" min="2" max="60">
+        </div>
+      </div>
+    </div>
+
+    <button class="start-btn" onclick="startPractice()">Start practice ▶</button>
+  </div>
+</div>
+
+<!-- Interactive Screen -->
+<div class="app-screen" id="app-screen">
+  <div class="top-bar">
+    <a class="back-btn" href="index.html">&larr; All resources</a>
+    <button class="stop-btn" onclick="stopPractice()">Stop</button>
+  </div>
+
+  <div class="pvc-wrapper" id="pvc-wrapper">
+    <div class="pvc-header-row" id="pvc-header"></div>
+    <div class="pvc-body-row" id="pvc-body"></div>
+  </div>
+
+  <div class="display-area">
+    <div class="math-problem" id="problem-text">0 + 0</div>
+    <div class="answer-display" id="answer-text">= 0</div>
+  </div>
+
+  <div class="timer-container">
+    <div class="timer-bar" id="timer-bar"></div>
+  </div>
+</div>
+
+<script>
+  const COLUMNS = [
+    { id: 'M',   label: 'M',   full: 'Millions',          val: 1000000, hdrBg: 'var(--col-m-hdr)',   tokenBg: 'var(--token-m)',   tokenText: '1,000,000' },
+    { id: 'HTh', label: 'HTh', full: 'Hundred Thousands', val: 100000,  hdrBg: 'var(--col-hth-hdr)', tokenBg: 'var(--token-hth)', tokenText: '100,000' },
+    { id: 'TTh', label: 'TTh', full: 'Ten Thousands',     val: 10000,   hdrBg: 'var(--col-tth-hdr)', tokenBg: 'var(--token-tth)', tokenText: '10,000' },
+    { id: 'Th',  label: 'Th',  full: 'Thousands',         val: 1000,    hdrBg: 'var(--col-th-hdr)',  tokenBg: 'var(--token-th)',  tokenText: '1,000' },
+    { id: 'H',   label: 'H',   full: 'Hundreds',          val: 100,     hdrBg: 'var(--col-h-hdr)',   tokenBg: 'var(--token-h)',   tokenText: '100' },
+    { id: 'T',   label: 'T',   full: 'Tens',              val: 10,      hdrBg: 'var(--col-t-hdr)',   tokenBg: 'var(--token-t)',   tokenText: '10' },
+    { id: 'O',   label: 'O',   full: 'Ones',              val: 1,       hdrBg: 'var(--col-o-hdr)',   tokenBg: 'var(--token-o)',   tokenText: '1' }
+  ];
+
+  const RANGE_OPTIONS = [
+    { value: 100,     label: 'Up to 100' },
+    { value: 1000,    label: 'Up to 1,000' },
+    { value: 10000,   label: 'Up to 10,000' },
+    { value: 100000,  label: 'Up to 100,000' },
+    { value: 1000000, label: 'Up to 1,000,000' }
+  ];
+
+  const OPERATION_OPTIONS = [
+    { value: 'add',      label: 'Addition' },
+    { value: 'subtract', label: 'Subtraction' },
+    { value: 'mix',      label: 'Mixed' }
+  ];
+
+  const STYLE_OPTIONS = [
+    { value: '1', label: 'Round numbers', caption: 'Adds or subtracts a single power of ten (10, 100, 1,000...) within range. Nothing to fine-tune.' },
+    { value: '2', label: 'Friendly multiples', caption: 'Adds or subtracts a multiple of ten, like 20, 300 or 6,000. Choose which multiples to include below.' },
+    { value: '3', label: 'Any numbers', caption: 'Adds or subtracts any number with the chosen number of digits, like 47 or 638. Choose which digit lengths to include below.' }
+  ];
+
+  const TIME_PRESETS = [5, 10, 15, 20, 30];
+
+  const SPEED_OPTIONS = [
+    { value: 'slow',   label: 'Slower' },
+    { value: 'normal', label: 'Normal' },
+    { value: 'fast',   label: 'Faster' }
+  ];
+  const SPEED_MULTIPLIERS = { slow: 1.8, normal: 1.3, fast: 0.85 };
+
+  let animationFrame = null;
+  let currentAnswer = 0;
+  let stateCounts = {};
+  let activeColumns = [];
+  let customFilters = { multipliers: [1,2,3,4,5,6,7,8,9], digitLengths: [2] };
+
+  let selectedRange = 1000000;
+  let selectedOperation = 'mix';
+  let selectedStyle = '2';
+  let selectedSpeed = 'normal';
+
+  // Scales a base millisecond duration by the chosen exchange animation speed.
+  function ms(base) {
+    return Math.round(base * SPEED_MULTIPLIERS[selectedSpeed]);
+  }
+
+  function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  /* ============================================================
+     Setup panel construction
+     ============================================================ */
+
+  function buildSegment(container, options, selectedValue, onPick) {
+    container.innerHTML = '';
+    options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.innerText = opt.label;
+      if (opt.value === selectedValue) btn.classList.add('active');
+      btn.onclick = () => onPick(opt.value);
+      container.appendChild(btn);
+    });
+  }
+
+  function activeColumnNames(maxVal) {
+    return getActiveColumns(maxVal).map(c => c.full).join(', ');
+  }
+
+  function renderRangeSeg() {
+    buildSegment(document.getElementById('range-seg'), RANGE_OPTIONS, selectedRange, (value) => {
+      selectedRange = value;
+      renderRangeSeg();
+      renderTuneBox();
+    });
+    document.getElementById('range-caption').innerText = 'Columns shown: ' + activeColumnNames(selectedRange);
+  }
+
+  function renderOperationSeg() {
+    buildSegment(document.getElementById('operation-seg'), OPERATION_OPTIONS, selectedOperation, (value) => {
+      selectedOperation = value;
+      renderOperationSeg();
+    });
+  }
+
+  function renderStyleSeg() {
+    buildSegment(document.getElementById('style-seg'), STYLE_OPTIONS, selectedStyle, (value) => {
+      selectedStyle = value;
+      renderStyleSeg();
+      renderTuneBox();
+    });
+    const current = STYLE_OPTIONS.find(o => o.value === selectedStyle);
+    document.getElementById('style-caption').innerText = current ? current.caption : '';
+  }
+
+  function renderSpeedSeg() {
+    buildSegment(document.getElementById('speed-seg'), SPEED_OPTIONS, selectedSpeed, (value) => {
+      selectedSpeed = value;
+      renderSpeedSeg();
+    });
+  }
+
+  function validDigitLengths(maxVal) {
+    const maxPower = Math.floor(Math.log10(maxVal));
+    const lengths = [];
+    for (let len = 2; len <= maxPower; len++) lengths.push(len);
+    return lengths.length ? lengths : [2];
+  }
+
+  function renderTuneBox() {
+    const box = document.getElementById('tune-box');
+    const title = document.getElementById('tune-title');
+    const chipGroup = document.getElementById('tune-chips');
+    const allBtn = document.getElementById('tune-all');
+    const noneBtn = document.getElementById('tune-none');
+    chipGroup.innerHTML = '';
+
+    if (selectedStyle === '1') {
+      box.style.display = 'none';
+      return;
+    }
+
+    box.style.display = 'block';
+
+    if (selectedStyle === '2') {
+      title.innerText = 'Included multiples (×1 – ×9)';
+      if (!customFilters.multipliers.length) customFilters.multipliers = [1,2,3,4,5,6,7,8,9];
+
+      const renderChips = () => {
+        chipGroup.innerHTML = '';
+        for (let i = 1; i <= 9; i++) {
+          const chip = document.createElement('div');
+          chip.className = 'chip' + (customFilters.multipliers.includes(i) ? ' active' : '');
+          chip.innerText = '×' + i;
+          chip.onclick = () => {
+            if (customFilters.multipliers.includes(i)) {
+              customFilters.multipliers = customFilters.multipliers.filter(m => m !== i);
+            } else {
+              customFilters.multipliers.push(i);
+            }
+            renderChips();
+          };
+          chipGroup.appendChild(chip);
+        }
+      };
+      renderChips();
+
+      allBtn.onclick = () => { customFilters.multipliers = [1,2,3,4,5,6,7,8,9]; renderChips(); };
+      noneBtn.onclick = () => { customFilters.multipliers = []; renderChips(); };
+
+    } else {
+      title.innerText = 'Included digit lengths';
+      const valid = validDigitLengths(selectedRange);
+      customFilters.digitLengths = customFilters.digitLengths.filter(d => valid.includes(d));
+      if (!customFilters.digitLengths.length) customFilters.digitLengths = valid.slice();
+
+      const renderChips = () => {
+        chipGroup.innerHTML = '';
+        valid.forEach(len => {
+          const chip = document.createElement('div');
+          chip.className = 'chip' + (customFilters.digitLengths.includes(len) ? ' active' : '');
+          chip.innerText = len + '-digit';
+          chip.onclick = () => {
+            if (customFilters.digitLengths.includes(len)) {
+              customFilters.digitLengths = customFilters.digitLengths.filter(d => d !== len);
+            } else {
+              customFilters.digitLengths.push(len);
+            }
+            renderChips();
+          };
+          chipGroup.appendChild(chip);
+        });
+      };
+      renderChips();
+
+      allBtn.onclick = () => { customFilters.digitLengths = valid.slice(); renderChips(); };
+      noneBtn.onclick = () => { customFilters.digitLengths = []; renderChips(); };
+    }
+  }
+
+  function renderTimeRow() {
+    const row = document.getElementById('time-row');
+    const input = document.getElementById('time-limit');
+    const existingCustom = row.querySelector('.time-custom');
+
+    row.innerHTML = '';
+    TIME_PRESETS.forEach(seconds => {
+      const chip = document.createElement('div');
+      chip.className = 'chip' + (parseInt(input.value) === seconds ? ' active' : '');
+      chip.innerText = seconds + 's';
+      chip.onclick = () => {
+        input.value = seconds;
+        renderTimeRow();
+      };
+      row.appendChild(chip);
+    });
+    row.appendChild(existingCustom);
+  }
+
+  function initSetupPanel() {
+    renderRangeSeg();
+    renderOperationSeg();
+    renderStyleSeg();
+    renderTuneBox();
+    renderSpeedSeg();
+    renderTimeRow();
+    document.getElementById('time-limit').addEventListener('input', renderTimeRow);
+  }
+
+  initSetupPanel();
+
+  /* ============================================================
+     Question generation
+     ============================================================ */
+
+  function generateModifier(maxVal, level) {
+    const maxPower = Math.floor(Math.log10(maxVal));
+    const power = Math.pow(10, getRandomInt(1, Math.max(1, maxPower - 1)));
+
+    if (level === '1') {
+      return power;
+    } else if (level === '2') {
+      const allowed = customFilters.multipliers.length ? customFilters.multipliers : [1,2,3,4,5,6,7,8,9];
+      const mult = allowed[getRandomInt(0, allowed.length - 1)];
+      return power * mult;
+    } else {
+      const validLens = validDigitLengths(maxVal);
+      const allowedLengths = customFilters.digitLengths.length ? customFilters.digitLengths : validLens;
+      const digits = allowedLengths[getRandomInt(0, allowedLengths.length - 1)];
+      const min = Math.pow(10, digits - 1);
+      const max = Math.pow(10, digits) - 1;
+      return getRandomInt(min, Math.min(max, maxVal));
+    }
+  }
+
+  function getActiveColumns(maxVal) {
+    if (maxVal >= 1000000) return COLUMNS;
+    if (maxVal >= 100000) return COLUMNS.slice(1);
+    if (maxVal >= 10000) return COLUMNS.slice(2);
+    if (maxVal >= 1000) return COLUMNS.slice(3);
+    return COLUMNS.slice(4);
+  }
+
+  /* ============================================================
+     Rendering the place value chart
+     ============================================================ */
+
+  function renderPVCLayout(cols) {
+    const hdr = document.getElementById('pvc-header');
+    const body = document.getElementById('pvc-body');
+    hdr.innerHTML = '';
+    body.innerHTML = '';
+
+    cols.forEach(col => {
+      const hCell = document.createElement('div');
+      hCell.className = 'pvc-header-cell';
+      hCell.style.background = col.hdrBg;
+      hCell.innerText = col.label;
+      hdr.appendChild(hCell);
+
+      const bCol = document.createElement('div');
+      bCol.className = 'pvc-column';
+      bCol.id = `col-${col.id}`;
+
+      const grid = document.createElement('div');
+      grid.className = 'token-grid';
+      grid.id = `grid-${col.id}`;
+      bCol.appendChild(grid);
+
+      body.appendChild(bCol);
+    });
+  }
+
+  function populateCounters(number, cols) {
+    stateCounts = {};
+    let temp = number;
+
+    cols.forEach(col => {
+      const count = Math.floor(temp / col.val);
+      stateCounts[col.id] = count;
+      temp %= col.val;
+
+      const grid = document.getElementById(`grid-${col.id}`);
+      if (grid) {
+        grid.innerHTML = '';
+        for (let i = 0; i < count; i++) {
+          grid.appendChild(createToken(col));
+        }
+      }
+    });
+  }
+
+  function createToken(col, extraClass = '') {
+    const token = document.createElement('div');
+    token.className = ('token ' + extraClass).trim();
+    token.style.background = col.tokenBg;
+    token.textContent = col.tokenText;
+    return token;
+  }
+
+  /* Sizes counters so they fill each column nicely: 2 across, up to 5 rows deep. */
+  function refreshTokenSizing() {
+    const columns = document.querySelectorAll('#pvc-body .pvc-column');
+    if (!columns.length) return;
+    const sample = columns[0];
+    const styles = getComputedStyle(sample);
+    const availH = sample.clientHeight - parseFloat(styles.paddingTop) - parseFloat(styles.paddingBottom);
+    const availW = sample.clientWidth - parseFloat(styles.paddingLeft) - parseFloat(styles.paddingRight);
+
+    const rows = 5, cols = 2, gap = 10;
+    const sizeByH = (availH - gap * (rows - 1)) / rows;
+    const sizeByW = (availW - gap * (cols - 1)) / cols;
+    let size = Math.floor(Math.min(sizeByH, sizeByW));
+    size = Math.max(30, Math.min(size, 100));
+
+    document.documentElement.style.setProperty('--token-size', size + 'px');
+    document.documentElement.style.setProperty('--token-gap', gap + 'px');
+  }
+
+  window.addEventListener('resize', () => {
+    if (document.getElementById('app-screen').style.display === 'flex') refreshTokenSizing();
+  });
+
+  /* ============================================================
+     Exchange animations: gather-then-slide (carrying) and
+     slide-then-break (borrowing)
+     ============================================================ */
+
+  function columnBoxOf(grid) {
+    return grid.parentElement.getBoundingClientRect();
+  }
+
+  function spawnFlyer(col, rect, extraClass) {
+    const flyer = createToken(col, 'flying-token ' + (extraClass || ''));
+    flyer.style.left = rect.left + 'px';
+    flyer.style.top = rect.top + 'px';
+    flyer.style.width = rect.width + 'px';
+    flyer.style.height = rect.height + 'px';
+    document.body.appendChild(flyer);
+    return flyer;
+  }
+
+  function landingSpot(colBox, size) {
+    return {
+      x: colBox.left + colBox.width / 2 - size / 2,
+      y: colBox.top + 14
+    };
+  }
+
+  // Borrowing: one counter slides from the donor column to the receiver
+  // column, then bursts into ten counters of the receiver's value.
+  function borrowFromColumn(donorIdx, receiverIdx, done) {
+    const donorCol = activeColumns[donorIdx];
+    const receiverCol = activeColumns[receiverIdx];
+    const donorGrid = document.getElementById(`grid-${donorCol.id}`);
+    const receiverGrid = document.getElementById(`grid-${receiverCol.id}`);
+    const donorToken = donorGrid.lastElementChild;
+
+    if (!donorToken) { done(); return; }
+
+    stateCounts[donorCol.id] -= 1;
+    stateCounts[receiverCol.id] += 10;
+
+    const fromRect = donorToken.getBoundingClientRect();
+    donorToken.remove();
+
+    const flyer = spawnFlyer(donorCol, fromRect);
+    const size = fromRect.width;
+    const target = landingSpot(columnBoxOf(receiverGrid), size);
+    const slideMs = ms(650);
+
+    flyer.style.transition = `left ${slideMs}ms cubic-bezier(0.4,0,0.2,1), top ${slideMs}ms cubic-bezier(0.4,0,0.2,1)`;
+    requestAnimationFrame(() => {
+      flyer.style.left = target.x + 'px';
+      flyer.style.top = target.y + 'px';
+    });
+
+    setTimeout(() => {
+      flyer.classList.add('bursting');
+      flyer.style.animationDuration = ms(220) + 'ms';
+      setTimeout(() => {
+        flyer.remove();
+        for (let i = 0; i < 10; i++) {
+          const nt = createToken(receiverCol, 'pop-in');
+          nt.style.animationDuration = ms(320) + 'ms';
+          nt.style.animationDelay = ms(i * 45) + 'ms';
+          receiverGrid.appendChild(nt);
+        }
+        setTimeout(done, ms(10 * 45) + ms(320));
+      }, ms(220));
+    }, slideMs);
+  }
+
+  // Carrying: ten counters gather into the middle of their column one after
+  // another, become one counter of the next place value column, then slide across.
+  function resolveExchanges(isAddition, done) {
+    if (!isAddition) { done(); return; }
+
+    for (let i = activeColumns.length - 1; i > 0; i--) {
+      const col = activeColumns[i];
+      const nextCol = activeColumns[i - 1];
+
+      if (stateCounts[col.id] >= 10) {
+        stateCounts[col.id] -= 10;
+        stateCounts[nextCol.id] += 1;
+
+        const grid = document.getElementById(`grid-${col.id}`);
+        const nextGrid = document.getElementById(`grid-${nextCol.id}`);
+        const colBox = columnBoxOf(grid);
+        const gatherX = colBox.left + colBox.width / 2;
+        const gatherY = colBox.top + colBox.height / 2;
+
+        const tokensToMerge = Array.from(grid.children).slice(-10);
+        const size = tokensToMerge.length ? tokensToMerge[0].getBoundingClientRect().width : 48;
+
+        const gatherDuration = ms(520);
+        const staggerStep = ms(60);
+
+        tokensToMerge.forEach((t, idx) => {
+          const r = t.getBoundingClientRect();
+          t.remove();
+          const flyer = spawnFlyer(col, r);
+          flyer.style.transitionDelay = (idx * staggerStep) + 'ms';
+          flyer.style.transition =
+            `left ${gatherDuration}ms cubic-bezier(0.55,0,0.85,0.35), ` +
+            `top ${gatherDuration}ms cubic-bezier(0.55,0,0.85,0.35), ` +
+            `transform ${gatherDuration}ms cubic-bezier(0.55,0,0.85,0.35)`;
+          requestAnimationFrame(() => {
+            flyer.style.left = (gatherX - r.width / 2) + 'px';
+            flyer.style.top = (gatherY - r.height / 2) + 'px';
+            flyer.style.transform = 'scale(0.55)';
+          });
+          setTimeout(() => flyer.remove(), idx * staggerStep + gatherDuration + 40);
+        });
+
+        const totalGatherTime = (tokensToMerge.length - 1) * staggerStep + gatherDuration;
+
+        setTimeout(() => {
+          const merged = spawnFlyer(col, { left: gatherX - size / 2, top: gatherY - size / 2, width: size, height: size });
+          merged.style.transition = `background ${ms(200)}ms ease`;
+
+          setTimeout(() => {
+            merged.style.background = nextCol.tokenBg;
+            merged.textContent = nextCol.tokenText;
+            merged.classList.add('became');
+            merged.style.animationDuration = ms(260) + 'ms';
+
+            const target = landingSpot(columnBoxOf(nextGrid), size);
+            const slideMs = ms(620);
+            merged.style.transition = `left ${slideMs}ms cubic-bezier(0.4,0,0.2,1), top ${slideMs}ms cubic-bezier(0.4,0,0.2,1)`;
+            requestAnimationFrame(() => {
+              merged.style.left = target.x + 'px';
+              merged.style.top = target.y + 'px';
+            });
+
+            setTimeout(() => {
+              merged.remove();
+              const settled = createToken(nextCol, 'pop-in');
+              settled.style.animationDuration = ms(320) + 'ms';
+              nextGrid.appendChild(settled);
+              resolveExchanges(isAddition, done);
+            }, slideMs);
+          }, ms(260));
+        }, totalGatherTime + ms(150));
+
+        return;
+      }
+    }
+
+    done();
+  }
+
+  function animateTimer(durationMs, callback) {
+    const bar = document.getElementById('timer-bar');
+    let startTime = null;
+
+    function step(timestamp) {
+      if (!startTime) startTime = timestamp;
+      const progress = timestamp - startTime;
+      const remainingRatio = Math.max(0, 1 - (progress / durationMs));
+      bar.style.transform = `scaleX(${remainingRatio})`;
+
+      if (progress < durationMs) {
+        animationFrame = requestAnimationFrame(step);
+      } else if (callback) {
+        callback();
+      }
+    }
+
+    animationFrame = requestAnimationFrame(step);
+  }
+
+  function executeVisualAnswer(base, mod, isAddition, callback) {
+    if (isAddition) {
+      activeColumns.slice().reverse().forEach(col => {
+        const digit = Math.floor(mod / col.val) % 10;
+        if (digit > 0) {
+          const grid = document.getElementById(`grid-${col.id}`);
+          for (let i = 0; i < digit; i++) {
+            const t = createToken(col, 'pop-in added');
+            t.style.animationDuration = ms(320) + 'ms';
+            grid.appendChild(t);
+          }
+          stateCounts[col.id] += digit;
+        }
+      });
+
+      setTimeout(() => resolveExchanges(true, callback), ms(700));
+
+    } else {
+      const subTarget = {};
+      activeColumns.forEach(col => {
+        subTarget[col.id] = Math.floor(mod / col.val) % 10;
+      });
+
+      // Walk the columns from ones up to the largest place value. For each
+      // one: borrow into it if it doesn't have enough counters yet, then
+      // remove that column's counters, THEN move on to the next column —
+      // so borrowing and removal cascade along in order rather than every
+      // column's removal firing at once at the end.
+      function processColumn(colIdx) {
+        if (colIdx < 0) {
+          if (callback) callback();
+          return;
+        }
+
+        const col = activeColumns[colIdx];
+        const needed = subTarget[col.id];
+
+        function ensureEnough(next) {
+          if (stateCounts[col.id] >= needed) { next(); return; }
+
+          let donorIdx = colIdx - 1;
+          while (donorIdx >= 0 && stateCounts[activeColumns[donorIdx].id] === 0) {
+            donorIdx--;
+          }
+
+          if (donorIdx >= 0) {
+            borrowFromColumn(donorIdx, donorIdx + 1, () => ensureEnough(next));
+          } else {
+            next();
+          }
+        }
+
+        ensureEnough(() => {
+          if (needed === 0) {
+            processColumn(colIdx - 1);
+            return;
+          }
+
+          const grid = document.getElementById(`grid-${col.id}`);
+          const tokens = Array.from(grid.children);
+          const toRemove = [];
+          for (let i = 0; i < needed && i < tokens.length; i++) {
+            const t = tokens[tokens.length - 1 - i];
+            t.classList.add('subtract-target');
+            toRemove.push(t);
+          }
+          stateCounts[col.id] -= needed;
+
+          setTimeout(() => {
+            const fadeMs = ms(280);
+            toRemove.forEach(t => {
+              t.style.transition = `opacity ${fadeMs}ms ease, transform ${fadeMs}ms ease`;
+              t.classList.add('fade-out');
+              setTimeout(() => t.remove(), fadeMs);
+            });
+            setTimeout(() => processColumn(colIdx - 1), ms(360));
+          }, ms(550));
+        });
+      }
+
+      processColumn(activeColumns.length - 1);
+    }
+  }
+
+  function runCycle() {
+    const opChoice = selectedOperation;
+    const level = selectedStyle;
+    const questionTime = parseInt(document.getElementById('time-limit').value) * 1000;
+    const maxVal = selectedRange;
+
+    let mod = generateModifier(maxVal, level);
+    mod = Math.max(1, Math.min(mod, Math.floor(maxVal / 2)));
+
+    let base = getRandomInt(mod * 2, maxVal);
+
+    let isAddition = opChoice === 'add' ? true : (opChoice === 'subtract' ? false : Math.random() < 0.5);
+
+    if (!isAddition && base < mod) base += mod;
+
+    const opSymbol = isAddition ? '+' : '-';
+    currentAnswer = isAddition ? base + mod : base - mod;
+
+    activeColumns = getActiveColumns(maxVal);
+    renderPVCLayout(activeColumns);
+    populateCounters(base, activeColumns);
+    refreshTokenSizing();
+
+    const problemEl = document.getElementById('problem-text');
+    const answerEl = document.getElementById('answer-text');
+
+    problemEl.innerText = `${base.toLocaleString()} ${opSymbol} ${mod.toLocaleString()}`;
+    answerEl.innerText = `= ${currentAnswer.toLocaleString()}`;
+    answerEl.classList.remove('visible');
+
+    animateTimer(questionTime, () => {
+      answerEl.classList.add('visible');
+      executeVisualAnswer(base, mod, isAddition, () => {
+        animateTimer(4000, () => {
+          runCycle();
+        });
+      });
+    });
+  }
+
+  function startPractice() {
+    document.getElementById('setup-panel').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'flex';
+    runCycle();
+  }
+
+  function stopPractice() {
+    cancelAnimationFrame(animationFrame);
+    document.querySelectorAll('.flying-token').forEach(t => t.remove());
+    document.getElementById('app-screen').style.display = 'none';
+    document.getElementById('setup-panel').style.display = 'block';
+  }
+</script>
+</body>
+</html>
