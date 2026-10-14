@@ -405,6 +405,9 @@
   .school-logo { display: block; width: 240px; max-width: 70%; height: auto; margin: 0 0 20px; }
 
   footer.note { color: var(--ink-soft); }
+  /* keep every card's content top-aligned, whatever the card height */
+  .card { display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; }
+  .card .open-hint { margin-top: auto; }
 </style>
 </head>
 <body>
@@ -541,6 +544,39 @@
     </div>
   </div>
 
+  <div class="group">
+    <h2 class="group-title">Multiplication &amp; Division</h2>
+    <div class="card-grid">
+
+    <button class="card" data-resource="multiples">
+      <span class="tab">Multiples</span>
+      <div class="icon-row" aria-hidden="true">
+        <div class="icon-dot" style="background:#002199;">3</div>
+        <div class="icon-dot" style="background:#05951A;">6</div>
+        <div class="icon-dot" style="background:#002199;">9</div>
+        <div class="icon-dot" style="background:#05951A;">12</div>
+      </div>
+      <h2>Multiples &amp; Common Multiples</h2>
+      <p>Explore multiples on a hundred square, then practise finding multiples, common multiples and the smallest common multiple.</p>
+      <span class="open-hint">Tap to find out more &gt;</span>
+    </button>
+
+    <button class="card" data-resource="factors">
+      <span class="tab">Factors</span>
+      <div class="icon-row" aria-hidden="true">
+        <div class="icon-dot" style="background:#002199;">1</div>
+        <div class="icon-dot" style="background:#05951A;">2</div>
+        <div class="icon-dot" style="background:#002199;">4</div>
+        <div class="icon-dot" style="background:#05951A;">8</div>
+      </div>
+      <h2>Factors &amp; Common Factors</h2>
+      <p>Use counters to find the factors of a number, then practise listing factors and common factors.</p>
+      <span class="open-hint">Tap to find out more &gt;</span>
+    </button>
+
+    </div>
+  </div>
+
   <footer class="note">Click a resource to see how it works before you start.</footer>
 </div>
 
@@ -606,6 +642,16 @@
       title: "Missing Numbers",
       body: "You'll see two calculations joined by an equals sign, with one number missing. Look for numbers that are close to each other, like 98 and 100. In an addition, if one number goes up the other goes down by the same amount so the total stays the same. In a subtraction, both numbers change by the same amount so the difference stays the same. Use the hint and the picture if you get stuck, and type the missing number.",
       href: "missing_numbers.html"
+    },
+    "multiples": {
+      title: "Multiples & Common Multiples",
+      body: "Start with Explore: choose a number and its multiples are shaded on a hundred square. Add a second number to see which multiples they share, then step through the method for finding the smallest common multiple. Switch to Practise for questions: spot multiples, complete number tracks, list multiples, and find common multiples. A hint and a hundred square are there if you need them.",
+      href: "multiples.html"
+    },
+    "factors": {
+      title: "Factors & Common Factors",
+      body: "Start with Explore: choose a number and use the rows button to arrange its counters. When every row is full and nothing is left over, you have found a pair of factors. Compare two numbers to see their common factors. Switch to Practise for questions: list the factors of a number, find common factors and the greatest common factor, or decide if one number is a factor of another.",
+      href: "factors.html"
     }
   };
 
