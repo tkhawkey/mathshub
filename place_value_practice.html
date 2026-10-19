@@ -667,6 +667,18 @@
   .school-logo { display: block; width: 240px; max-width: 70%; height: auto; margin: 0 0 20px; }
 
   footer.note { color: var(--ink-soft); }
+
+  /* Phone layout: columns can shrink, counters shrink with them and drop their text */
+  .pvc-column, .pvc-header-cell { min-width: 0; }
+  .pvc-column { overflow: hidden; }
+  @media (max-width: 600px) {
+    .pvc-header-row { padding: 4px 3px 0; gap: 1px; height: 44px; }
+    .pvc-header-cell { font-size: 0.8rem; border-radius: 6px 6px 0 0; }
+    .pvc-body-row { margin: 0 3px 3px; gap: 1px; }
+    .pvc-column { padding: 0.4rem 0.1rem; }
+    .token { border-width: 1px; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+  }
+  .tiny-tokens .token { font-size: 0; }
 </style>
 </head>
 <body>
@@ -1076,7 +1088,8 @@
     const sizeByH = (availH - gap * (rows - 1)) / rows;
     const sizeByW = (availW - gap * (cols - 1)) / cols;
     let size = Math.floor(Math.min(sizeByH, sizeByW));
-    size = Math.max(30, Math.min(size, 100));
+    size = Math.max(10, Math.min(size, 100));
+    document.documentElement.classList.toggle('tiny-tokens', size < 36);
 
     document.documentElement.style.setProperty('--token-size', size + 'px');
     document.documentElement.style.setProperty('--token-gap', gap + 'px');
