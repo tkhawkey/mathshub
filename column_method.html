@@ -792,7 +792,7 @@
       if (c3 === 0 && !isAdd) {
         html += cell("");
       } else {
-        html += cell("<input class='ans-input' type='text' inputmode='numeric' maxlength='1' id='ans-" + place3 + "' aria-label='Answer digit for " + PLACE_NAMES[Math.min(place3, PLACE_NAMES.length - 1)] + " column'>");
+        html += cell("<input class='ans-input' type='text' inputmode='numeric' maxlength='1' id='ans-" + place3 + "' aria-label='" + (c3 === 0 ? "Leading digit of the answer" : "Answer digit for " + PLACE_NAMES[Math.min(place3, PLACE_NAMES.length - 1)] + " column") + "'>");
       }
     }
     html += "</tr>";

@@ -638,12 +638,14 @@
 
   function setDigitText(box, value, animate) {
     var text = box.querySelector(".digit-text");
+    if (text._t) { clearTimeout(text._t); text._t = null; text.classList.remove("swap"); }
     if (!animate) {
       text.textContent = value;
       return;
     }
     text.classList.add("swap");
-    setTimeout(function () {
+    text._t = setTimeout(function () {
+      text._t = null;
       text.textContent = value;
       text.classList.remove("swap");
     }, 220);

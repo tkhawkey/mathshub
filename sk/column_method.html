@@ -794,7 +794,7 @@
       if (c3 === 0 && !isAdd) {
         html += cell("");
       } else {
-        html += cell("<input class='ans-input' type='text' inputmode='numeric' maxlength='1' id='ans-" + place3 + "' aria-label='Číslica výsledku pre stĺpec " + PLACE_GEN_PL[Math.min(place3, PLACE_GEN_PL.length - 1)] + "'>");
+        html += cell("<input class='ans-input' type='text' inputmode='numeric' maxlength='1' id='ans-" + place3 + "' aria-label='" + (c3 === 0 ? "Prvá číslica výsledku" : "Číslica výsledku pre stĺpec " + PLACE_GEN_PL[Math.min(place3, PLACE_GEN_PL.length - 1)]) + "'>");
       }
     }
     html += "</tr>";

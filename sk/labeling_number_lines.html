@@ -392,6 +392,14 @@
     text-align: center;
   }
 
+  .working .w-short { display: none; font-weight: 700; }
+  @media (max-width: 640px) {
+    .working .w-full { display: none; }
+    .working .w-short { display: inline; }
+    .working { font-size: 12px; max-width: 56px; }
+    .numberline { min-width: calc(var(--n, 5) * 58px + 120px); }
+  }
+
   .actions {
     display: flex;
     gap: 10px;
@@ -747,6 +755,7 @@
 
     var track = document.getElementById("numberline");
     track.innerHTML = "";
+    track.style.setProperty("--n", round.intervals);
 
     var checkBtn = document.getElementById("check-btn");
     var revealHelp = document.getElementById("reveal-help");
@@ -854,7 +863,9 @@
         wrongCount++;
         score.streak = 0;
         var i = parseInt(input.dataset.index, 10);
-        workingEl.textContent = fmt(round.start) + " + " + i + " \u00d7 " + fmt(round.step) + " = " + fmt(expected) + (raw ? " (napísané: " + fmt(got || 0) + ")" : " (nevyplnené)");
+        workingEl.innerHTML = "<span class='w-full'></span><span class='w-short'></span>";
+        workingEl.querySelector(".w-full").textContent = fmt(round.start) + " + " + i + " \u00d7 " + fmt(round.step) + " = " + fmt(expected) + (raw ? " (napísané: " + fmt(got || 0) + ")" : " (nevyplnené)");
+        workingEl.querySelector(".w-short").textContent = "= " + fmt(expected);
         workingEl.classList.remove("hidden");
       }
     });

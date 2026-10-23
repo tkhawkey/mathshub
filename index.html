@@ -410,19 +410,32 @@
   .card .open-hint { margin-top: auto; }
 
   /* language picker */
-  .lang-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 16px; font-size: 14px; }
-  .lang-row .globe { font-weight: 700; color: var(--ink-soft); margin-right: 2px; }
-  .lang-row a.pill { text-decoration: none; display: inline-block; font-size: 14px; padding: 6px 14px; }
+  .lang-dd { position: relative; display: inline-block; margin: 0 0 16px; font-size: 15px; }
+  .lang-dd summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; padding: 7px 14px; border: 2px solid var(--brand); border-radius: 999px; background: var(--card); color: var(--brand); font-family: var(--font-head); font-weight: 700; }
+  .lang-dd summary::-webkit-details-marker { display: none; }
+  .lang-dd summary::after { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg) translateY(-2px); margin-left: 2px; }
+  .lang-dd[open] summary::after { transform: rotate(-135deg) translateY(-2px); }
+  .lang-dd summary:focus-visible, .lang-dd a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .lang-dd .flag { width: 24px; height: 16px; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.25); flex: none; display: block; }
+  .lang-dd .menu { position: absolute; z-index: 20; left: 0; top: calc(100% + 6px); min-width: 100%; width: max-content; max-width: calc(100vw - 32px); margin: 0; padding: 6px; list-style: none; background: var(--card); border: 2px solid var(--brand); border-radius: 12px; box-shadow: 0 6px 18px rgba(0,33,153,.18); }
+  .lang-dd .menu a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; font-family: var(--font-head); font-weight: 600; }
+  .lang-dd .menu a:hover { background: var(--paper); }
+  .lang-dd .menu a[aria-current="true"] { background: var(--paper); color: var(--brand); font-weight: 700; }
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <nav class="lang-row" aria-label="Language">
-    <span class="globe">Language</span>
-    <a class="pill active" lang="en" href="index.html" aria-current="true">English</a>
-    <a class="pill" lang="sk" href="sk/index.html">Slovenčina</a>
-  </nav>
+  <details class="lang-dd">
+    <summary aria-label="Language: English"><svg class="flag" viewBox="0 0 24 16" width="24" height="16" aria-hidden="true" focusable="false"><rect width="24" height="16" fill="#012169"/><path d="M0 0L24 16M24 0L0 16" stroke="#fff" stroke-width="3"/><path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" stroke-width="1.2"/><path d="M12 0V16M0 8H24" stroke="#fff" stroke-width="5"/><path d="M12 0V16M0 8H24" stroke="#C8102E" stroke-width="3"/></svg><span>English</span></summary>
+    <!-- ru/uk hidden while being checked: delete the word "hidden" from those two <li> tags to show them -->
+    <ul class="menu">
+      <li><a lang="en" hreflang="en" href="index.html" aria-current="true"><svg class="flag" viewBox="0 0 24 16" width="24" height="16" aria-hidden="true" focusable="false"><rect width="24" height="16" fill="#012169"/><path d="M0 0L24 16M24 0L0 16" stroke="#fff" stroke-width="3"/><path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" stroke-width="1.2"/><path d="M12 0V16M0 8H24" stroke="#fff" stroke-width="5"/><path d="M12 0V16M0 8H24" stroke="#C8102E" stroke-width="3"/></svg><span>English</span></a></li>
+      <li><a lang="sk" hreflang="sk" href="sk/index.html"><svg class="flag" viewBox="0 0 24 16" width="24" height="16" aria-hidden="true" focusable="false"><rect width="24" height="5.34" fill="#fff"/><rect y="5.33" width="24" height="5.34" fill="#0B4EA2"/><rect y="10.66" width="24" height="5.34" fill="#EE1C25"/><path d="M5 3.5h6v5.2c0 2.2-3 3.6-3 3.6s-3-1.4-3-3.6z" fill="#EE1C25" stroke="#fff" stroke-width=".8"/><path d="M8 5v5.5M6.2 6.6h3.6M6.6 8.4h2.8" stroke="#fff" stroke-width=".9"/></svg><span>Slovenčina</span></a></li>
+      <li hidden><a lang="ru" hreflang="ru" href="ru/index.html"><svg class="flag" viewBox="0 0 24 16" width="24" height="16" aria-hidden="true" focusable="false"><rect width="24" height="5.34" fill="#fff"/><rect y="5.33" width="24" height="5.34" fill="#0039A6"/><rect y="10.66" width="24" height="5.34" fill="#D52B1E"/></svg><span>Русский</span></a></li>
+      <li hidden><a lang="uk" hreflang="uk" href="uk/index.html"><svg class="flag" viewBox="0 0 24 16" width="24" height="16" aria-hidden="true" focusable="false"><rect width="24" height="8" fill="#0057B7"/><rect y="8" width="24" height="8" fill="#FFD700"/></svg><span>Українська</span></a></li>
+    </ul>
+  </details>
 
 
   <header class="hero">
@@ -745,6 +758,11 @@
     if (e.key === "Escape" && !backdrop.classList.contains("hidden")) closeModal();
   });
 })();
+</script>
+<script>
+(function(){var d=document.querySelector(".lang-dd");if(!d)return;
+document.addEventListener("click",function(e){if(d.open&&!d.contains(e.target))d.open=false;});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&d.open){d.open=false;d.querySelector("summary").focus();}});})();
 </script>
 </body>
 </html>

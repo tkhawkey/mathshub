@@ -810,6 +810,13 @@
   const SPEED_MULTIPLIERS = { slow: 1.8, normal: 1.3, fast: 0.85 };
 
   let animationFrame = null;
+  // Every animation timer belongs to one practice session. Pressing Stop
+  // (or Start) begins a new session, so timers from the old one do nothing.
+  let sessionId = 0;
+  function sessTimeout(fn, ms) {
+    const sid = sessionId;
+    return setTimeout(function () { if (sid === sessionId) fn(); }, ms);
+  }
   let currentAnswer = 0;
   let stateCounts = {};
   let activeColumns = [];
@@ -1139,7 +1146,7 @@
     const receiverGrid = document.getElementById(`grid-${receiverCol.id}`);
     const donorToken = donorGrid.lastElementChild;
 
-    if (!donorToken) { done(); return; }
+    if (!donorToken) { done(false); return; }
 
     stateCounts[donorCol.id] -= 1;
     stateCounts[receiverCol.id] += 10;
@@ -1158,10 +1165,10 @@
       flyer.style.top = target.y + 'px';
     });
 
-    setTimeout(() => {
+    sessTimeout(() => {
       flyer.classList.add('bursting');
       flyer.style.animationDuration = ms(220) + 'ms';
-      setTimeout(() => {
+      sessTimeout(() => {
         flyer.remove();
         for (let i = 0; i < 10; i++) {
           const nt = createToken(receiverCol, 'pop-in');
@@ -1169,7 +1176,7 @@
           nt.style.animationDelay = ms(i * 45) + 'ms';
           receiverGrid.appendChild(nt);
         }
-        setTimeout(done, ms(10 * 45) + ms(320));
+        sessTimeout(done, ms(10 * 45) + ms(320));
       }, ms(220));
     }, slideMs);
   }
@@ -1213,16 +1220,16 @@
             flyer.style.top = (gatherY - r.height / 2) + 'px';
             flyer.style.transform = 'scale(0.55)';
           });
-          setTimeout(() => flyer.remove(), idx * staggerStep + gatherDuration + 40);
+          sessTimeout(() => flyer.remove(), idx * staggerStep + gatherDuration + 40);
         });
 
         const totalGatherTime = (tokensToMerge.length - 1) * staggerStep + gatherDuration;
 
-        setTimeout(() => {
+        sessTimeout(() => {
           const merged = spawnFlyer(col, { left: gatherX - size / 2, top: gatherY - size / 2, width: size, height: size });
           merged.style.transition = `background ${ms(200)}ms ease`;
 
-          setTimeout(() => {
+          sessTimeout(() => {
             merged.style.background = nextCol.tokenBg;
             merged.textContent = nextCol.tokenText;
             merged.classList.add('became');
@@ -1236,7 +1243,7 @@
               merged.style.top = target.y + 'px';
             });
 
-            setTimeout(() => {
+            sessTimeout(() => {
               merged.remove();
               const settled = createToken(nextCol, 'pop-in');
               settled.style.animationDuration = ms(320) + 'ms';
@@ -1257,7 +1264,9 @@
     const bar = document.getElementById('timer-bar');
     let startTime = null;
 
+    const sid = sessionId;
     function step(timestamp) {
+      if (sid !== sessionId) return;
       if (!startTime) startTime = timestamp;
       const progress = timestamp - startTime;
       const remainingRatio = Math.max(0, 1 - (progress / durationMs));
@@ -1288,7 +1297,7 @@
         }
       });
 
-      setTimeout(() => resolveExchanges(true, callback), ms(700));
+      sessTimeout(() => resolveExchanges(true, callback), ms(700));
 
     } else {
       const subTarget = {};
@@ -1319,7 +1328,7 @@
           }
 
           if (donorIdx >= 0) {
-            borrowFromColumn(donorIdx, donorIdx + 1, () => ensureEnough(next));
+            borrowFromColumn(donorIdx, donorIdx + 1, (ok) => (ok === false ? next() : ensureEnough(next)));
           } else {
             next();
           }
@@ -1341,14 +1350,14 @@
           }
           stateCounts[col.id] -= needed;
 
-          setTimeout(() => {
+          sessTimeout(() => {
             const fadeMs = ms(280);
             toRemove.forEach(t => {
               t.style.transition = `opacity ${fadeMs}ms ease, transform ${fadeMs}ms ease`;
               t.classList.add('fade-out');
-              setTimeout(() => t.remove(), fadeMs);
+              sessTimeout(() => t.remove(), fadeMs);
             });
-            setTimeout(() => processColumn(colIdx - 1), ms(360));
+            sessTimeout(() => processColumn(colIdx - 1), ms(360));
           }, ms(550));
         });
       }
@@ -1398,12 +1407,14 @@
   }
 
   function startPractice() {
+    sessionId++;
     document.getElementById('setup-panel').style.display = 'none';
     document.getElementById('app-screen').style.display = 'flex';
     runCycle();
   }
 
   function stopPractice() {
+    sessionId++;
     cancelAnimationFrame(animationFrame);
     document.querySelectorAll('.flying-token').forEach(t => t.remove());
     document.getElementById('app-screen').style.display = 'none';
