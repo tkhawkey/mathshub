@@ -421,7 +421,16 @@
   .lang-dd .menu a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; font-family: var(--font-head); font-weight: 600; }
   .lang-dd .menu a:hover { background: var(--paper); }
   .lang-dd .menu a[aria-current="true"] { background: var(--paper); color: var(--brand); font-weight: 700; }
+  .offline-status { margin: 10px 0 0; font-size: 13px; color: var(--ink-soft); }
+  .offline-status.ready { color: var(--correct); font-weight: 700; }
 </style>
+<!-- pwa -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#002199">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Maths Hub">
 </head>
 <body>
 <div class="wrap">
@@ -658,6 +667,7 @@
   </div>
 
   <footer class="note">Click a resource to see how it works before you start.</footer>
+  <p class="offline-status" id="offline-status" hidden></p>
 </div>
 
 <!-- Modal -->
@@ -799,6 +809,26 @@
 (function(){var d=document.querySelector(".lang-dd");if(!d)return;
 document.addEventListener("click",function(e){if(d.open&&!d.contains(e.target))d.open=false;});
 document.addEventListener("keydown",function(e){if(e.key==="Escape"&&d.open){d.open=false;d.querySelector("summary").focus();}});})();
+</script>
+<script>
+/* offline support: see sw.js */
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
+(function () {
+  var el = document.getElementById("offline-status");
+  if (!el || !("serviceWorker" in navigator) || !window.caches) return;
+  var T = {saving: "Saving for offline use…", ready: "✓ Saved on this device: it works without internet."}, tries = 0;
+  function check() {
+    navigator.serviceWorker.getRegistration().then(function (reg) {
+      if (!reg) { if (tries++ < 30) setTimeout(check, 1000); return; }
+      caches.match(new URL("__ready", reg.scope).href).then(function (hit) {
+        el.hidden = false;
+        if (hit) { el.textContent = T.ready; el.className = "offline-status ready"; }
+        else { el.textContent = T.saving; if (tries++ < 60) setTimeout(check, 1500); }
+      });
+    }).catch(function () {});
+  }
+  window.addEventListener("load", function () { setTimeout(check, 800); });
+})();
 </script>
 </body>
 </html>

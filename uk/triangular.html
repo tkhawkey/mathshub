@@ -628,6 +628,13 @@
   .sqtable { width: 100%; border-collapse: collapse; margin: 4px 0; }
   .sqtable td { padding: 4px 8px; border-bottom: 1px solid var(--border); font-size: 15px; font-family: var(--font-head); font-weight: 700; }
 </style>
+<!-- pwa -->
+<link rel="manifest" href="../manifest.webmanifest">
+<meta name="theme-color" content="#002199">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Maths Hub">
 </head>
 <body>
 <div class="wrap">
@@ -1209,6 +1216,10 @@ initModes();
 initQuiz(QUIZ);
 
 })();
+</script>
+<script>
+/* offline support: see sw.js */
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("../sw.js").catch(function () {}); }); }
 </script>
 </body>
 </html>

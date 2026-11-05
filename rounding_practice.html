@@ -526,6 +526,13 @@
 
   footer.note { color: var(--ink-soft); }
 </style>
+<!-- pwa -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#002199">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Maths Hub">
 </head>
 <body>
 <div class="wrap">
@@ -856,6 +863,10 @@
 
   updateStats();
 })();
+</script>
+<script>
+/* offline support: see sw.js */
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
 </script>
 </body>
 </html>

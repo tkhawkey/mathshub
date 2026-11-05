@@ -631,6 +631,13 @@
   .why-list p { margin: 0 0 5px; font-size: 14px; }
   .reveal-box .sq-svgbox { max-width: 260px; margin: 8px auto 4px; }
 </style>
+<!-- pwa -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#002199">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Maths Hub">
 </head>
 <body>
 <div class="wrap">
@@ -1255,6 +1262,10 @@ initModes();
 initQuiz(QUIZ);
 
 })();
+</script>
+<script>
+/* offline support: see sw.js */
+if ("serviceWorker" in navigator) { window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); }); }
 </script>
 </body>
 </html>
