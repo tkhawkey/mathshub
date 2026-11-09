@@ -4,7 +4,7 @@
    so the pages keep working without internet. When the device is online, pages are refreshed from the
    website, so a new upload reaches children automatically. */
 
-var CACHE = "cis-maths-v3";           // change the number only if you ever need to force a full re-download
+var CACHE = "cis-maths-v4";           // change the number only if you ever need to force a full re-download
 
 var TOOLS = [
   "index.html", "column_method.html", "estimating_rounding.html", "fact_families.html", "factors.html",
