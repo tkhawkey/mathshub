@@ -699,6 +699,29 @@
   .steplist .step.now { background: var(--brand-soft); border-radius: 8px; padding-left: 6px; padding-right: 6px; }
   .steplist .step.pend { display: none; }
   .mv-pane .legend { font-size: 14px; margin: 6px 0 0; color: var(--ink-soft); }
+
+  /* ===== base ten blocks ===== */
+  .bt { display: grid; width: 100%; column-gap: 0; }
+  .bt-h { font-family: var(--font-head); font-weight: 700; font-size: clamp(9px, 2.6vw, 13px); color: var(--ink-soft); text-align: center; padding: 2px 1px 4px; border-bottom: 2px solid var(--border); overflow-wrap: anywhere; line-height: 1.1; }
+  .bt-h.pt, .bt-c.pt { border-left: 3px solid var(--ink); }
+  .bt-rl { grid-column: 1 / -1; font-size: 13px; color: var(--ink-soft); font-weight: 700; margin: 8px 0 0; }
+  .bt-c { display: flex; flex-wrap: wrap; justify-content: center; align-content: flex-start; gap: 3px; padding: 6px 2px 2px; min-height: 40px; border-left: 1px solid var(--border); }
+  .bt-c:first-of-type, .bt-h:first-child { border-left: 0; }
+  .bt-v { flex: 0 0 100%; text-align: center; font-family: var(--font-head); font-weight: 700; font-size: clamp(14px, 4vw, 18px); border-top: 2px solid var(--border); margin-top: 4px; padding-top: 2px; }
+  .grp10 { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; padding: 3px; border: 2px dashed var(--ink); border-radius: 8px; max-width: 100%; box-sizing: border-box; }
+  .it { display: block; flex: 0 0 auto; box-sizing: border-box; }
+  .it.c1 { --c: var(--brand); } .it.c2 { --c: #E8A512; } .it.c3 { --c: var(--correct); }
+  .it.r0 { width: 9px; height: 9px; background: var(--c); border-radius: 2px; }
+  .it.r1 { width: 8px; height: 48px; border-radius: 2px; background: repeating-linear-gradient(to bottom, var(--c) 0 3.8px, #fff 3.8px 4.8px); }
+  .it.r2 { width: 34px; height: 34px; border-radius: 3px; background-color: var(--c); background-image: repeating-linear-gradient(to right, transparent 0 2.4px, #fff 2.4px 3.4px), repeating-linear-gradient(to bottom, transparent 0 2.4px, #fff 2.4px 3.4px); }
+  .it.r3 { width: 16px; height: 16px; border-radius: 3px; background: var(--c); border: 2px solid #fff; box-shadow: 0 0 0 1px var(--c); }
+  .bt.big .it.r0 { width: 20px; height: 20px; border-radius: 3px; }
+  .bt.big .it.r1 { width: 16px; height: 100px; background: repeating-linear-gradient(to bottom, var(--c) 0 9px, #fff 9px 10px); }
+  .it.cg { width: 20px; height: 20px; background: transparent; border: 2px dashed var(--ink-soft); border-radius: 3px; }
+  .bt-arrow { text-align: center; font-weight: 700; font-size: 16px; margin: 10px 0 4px; color: var(--ink); }
+  .bar-cell { white-space: nowrap; }
+  #lrn-ex .pv-number { margin-top: 4px; }
+  .answer-note { margin: 0 0 8px; font-size: 15px; color: var(--ink-soft); }
 </style>
 <!-- pwa -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -717,7 +740,7 @@
     <div class="masthead">
       <h1>Doubling and Halving</h1>
     </div>
-    <p class="subtitle">Learn the basics of doubling and halving, watch a number being doubled or halved step by step, then practise.</p>
+    <p class="subtitle">Build doubling and halving with place value blocks, step by step, then practise.</p>
   </header>
 
   <div class="mode-row">
@@ -744,11 +767,11 @@
     <p class="sq-msg" id="lrn-cap" aria-live="polite"></p>
 
     <p class="found-title" id="lrn-try-title"></p>
-    <p class="digit-line" id="lrn-num" aria-live="polite"></p>
-    <ul class="digit-facts" id="lrn-facts"></ul>
+    <p class="answer-note" id="lrn-try-note"></p>
+    <div id="lrn-ex"></div>
     <div class="tools-row">
       <button class="ghost-btn" id="lrn-new" type="button">New number</button>
-      <button class="ghost-btn" id="lrn-explore" type="button">Work it out step by step</button>
+      <button class="ghost-btn" id="lrn-explore" type="button">Try a number of my own</button>
     </div>
   </section>
 
@@ -756,7 +779,7 @@
   <section id="explore-screen" class="panel hidden">
     <span class="tab">Explore</span>
 
-    <p class="instructions">Choose double or half, then pick a number. Press Next step to see it worked out. The answer appears at the end. You can look at each step in three different ways.</p>
+    <p class="instructions">Choose double or half, then pick a number. Press Next step to see it worked out. The answer appears at the end. You can look at each step with base ten blocks or with a bar model.</p>
 
     <div class="pill-row" id="op-pills" aria-label="Operation">
       <button class="pill active" data-value="dbl">Double</button>
@@ -799,10 +822,12 @@
       <fieldset>
         <legend>Difficulty</legend>
         <div class="pill-row" id="level-pills">
-          <button class="pill active" data-value="1">1 &middot; Basics</button>
-          <button class="pill" data-value="2">2 &middot; Building up</button>
-          <button class="pill" data-value="3">3 &middot; Regrouping</button>
-          <button class="pill" data-value="4">4 &middot; Expert</button>
+          <button class="pill active" data-value="1">1 &middot; Digits</button>
+          <button class="pill" data-value="2">2 &middot; Tens</button>
+          <button class="pill" data-value="3">3 &middot; No swap</button>
+          <button class="pill" data-value="4">4 &middot; Swap</button>
+          <button class="pill" data-value="5">5 &middot; Hundreds+</button>
+          <button class="pill" data-value="6">6 &middot; Decimals</button>
         </div>
         <p class="level-hint" id="level-hint"></p>
       </fieldset>
@@ -843,7 +868,7 @@
     </section>
   </div>
 
-  <footer class="note">Digits 0 to 4 double to a single digit. Digits 5 to 9 make a ten. To double a number, split it into parts, double each part and add them. To halve, split it into parts you can halve (regroup odd parts), halve each part and add them. Doubling and halving are opposites.</footer>
+  <footer class="note">Place value blocks: 10 ones swap for 1 ten, 10 tens for 1 hundred. To double, make a second set and swap any groups of 10. To halve, share into 2 equal groups, swapping 1 block for 10 smaller blocks where a place is odd. Doubling and halving are opposites.</footer>
 </div>
 
 <script>
@@ -1084,85 +1109,85 @@ var MUL = "×", DIVS = "÷", DEC = ".", THOUS_COMMA = true;
 
 /* ================= all the words in one place ================= */
 var TXT = {
-  tabs: { count: "Counters", pw: "Part-whole", bar: "Bar model" },
+  tabs: { count: "Base ten blocks", bar: "Bar model" },
   dblName: function (n) { return "Double " + n; },
   halfName: function (n) { return "Half of " + n; },
   dblEq: function (n, r) { return "Double " + n + " = " + r; },
   halfEq: function (n, r) { return "Half of " + n + " = " + r; },
   qMark: "?",
+  and: " and ",
+  pl: ["ones", "tens", "hundreds", "thousands", "ten thousands", "hundred thousands", "millions"],
+  sg: ["one", "ten", "hundred", "thousand", "ten thousand", "hundred thousand", "million"],
+  dpl: ["tenths", "hundredths", "thousandths"],
+  dsg: ["tenth", "hundredth", "thousandth"],
   // stepper
   stepNext: "Next step", stepBack: "Back", stepAll: "Show all", stepAgain: "Start again",
   stepOf: function (s, n) { return "Step " + s + " of " + n; },
-  stepStart: "Press Next step to begin.",
-  stLook: "Look at each digit",
-  stSplitD: "Split into parts",
-  stSplitH: "Split into parts you can halve",
-  stDoubleEach: "Double each part",
-  stHalfEach: "Halve each part",
-  stAdd: "Put the parts back together",
-  legendDbl: "<span class='k easy'>0–4</span> double to a single digit. <span class='k ten'>5–9</span> make a ten or more.",
-  legendHalf: "<span class='k easy'>Even</span> digits halve easily. <span class='k odd'>Odd</span> digits need regrouping.",
-  regroup: "Some parts are odd, so we regroup: for example 1 ten becomes 10 ones. Now every part can be halved.",
-  oddNote: "The number is odd, so we also regroup 1 whole into 10 tenths. Half of an odd number ends in .5.",
-  carryNote: "Some of the doubled parts are 10 or more, so a ten is made. Add all the parts together.",
-  // models
-  cntStart: "The number as counters in a place value chart.",
-  cntSplit: "Each column is a part.",
-  cntRegroup: "Odd columns give 1 counter to the next column as 10 counters, so every column can be halved.",
-  cntDbl: "Double the counters in every column: add a second set (orange).",
-  cntHalf: "Share the counters in every column into 2 equal groups. One group (blue) is the half.",
-  cntDone: "Exchange 10 counters for 1 counter in the next column. Now read the answer.",
-  cntDoneH: "One group is the answer. Read it from the chart.",
-  pwWhole: "The whole number.",
-  pwParts: "Split the whole into parts.",
-  pwOp: function (dbl) { return dbl ? "Double each part." : "Halve each part."; },
-  pwDone: "Put the new parts together to make the new whole.",
-  barStart: "The number as a bar.",
-  barParts: "Split the bar into parts.",
-  barDbl: "A second, equal bar. Double means two equal bars.",
-  barHalf: "The bar is made of two equal shares. Each share is half.",
-  barTotalQ: "Total of both bars: ?",
-  barTotal: function (t) { return "Total of both bars: " + t; },
-  barShareQ: "One share: ?",
-  barShare: function (t) { return "One share: " + t; },
-  barLblWhole: "The whole",
-  barLblShare: function (i) { return "Share " + i; },
-  barLblCopy: "A second bar, the same",
+  // step titles and captions
+  tLook: "Look at the number",
+  tDouble: "Double it: make a second set",
+  tSwapD: function (a, b) { return "Swap 10 " + a + " for 1 " + b; },
+  tRead: "Read the answer",
+  tRegroup: function (a, b) { return "Swap 1 " + a + " for 10 " + b; },
+  tShare: "Share into 2 equal groups",
+  tHalfRead: "One group is the half",
+  cLook: function (xs, d) { return xs + " is " + d + "."; },
+  cLookHalfNone: " Every place has an even number of blocks, so it can be shared straight away.",
+  cLookHalfSome: " Some places have an odd number of blocks. An odd number cannot be shared equally, so we swap 1 block for 10 smaller blocks first.",
+  cDouble: function (d, ready) { return "Make a second set, the same as the first. Together there are " + d + "." + (ready ? " Each group of 10 is outlined. 10 blocks can be swapped for 1 block in the next place." : " No place has 10 or more blocks, so nothing needs swapping."); },
+  cSwapD: function (a, b, d) { return "10 " + a + " are swapped for 1 " + b + " (shown in green). Now there are " + d + "."; },
+  cRead: function (d, rs) { return "Read the answer: " + d + ". That is " + rs + "."; },
+  cRegroup: function (a, b, d) { return "There is an odd number of " + a + ", so 1 would be left over. Swap 1 " + a.replace(/s$/, "") + " for 10 " + b + " (shown in green). Now there are " + d + "."; },
+  cShare: function (d) { return "Share every place equally between 2 groups. Each group gets " + d + "."; },
+  cHalfRead: function (d, rs) { return "One group is half: " + d + ". That is " + rs + "."; },
+  // bar model
+  barWhole: "The number",
+  barParts: "The number, in parts",
+  barCopy: "A second copy",
+  barTogether: "Together",
+  barShare: function (i) { return "Share " + i; },
+  barTotal: function (t) { return "Total: " + t; },
+  barHalfTotal: function (t) { return "One share: " + t; },
   // learn
-  lrnRuleDbl: "<span class='k easy'>0–4</span> double to a single digit, so they are easy. <span class='k ten'>5–9</span> double to 10 or more, so they make a ten.",
-  lrnRuleHalf: "<span class='k easy'>Even</span> numbers share into 2 equal groups with nothing left over. <span class='k odd'>Odd</span> numbers leave 1 over, so they need regrouping or a half.",
+  lrnRuleDbl: "Double a digit from <b>0 to 4</b> and the answer is a single digit. Double a digit from <b>5 to 9</b> and the answer is 10 or more, so you swap 10 ones for 1 ten.",
+  lrnRuleHalf: "<b>Even</b> numbers share into 2 equal groups with nothing left over. <b>Odd</b> numbers leave 1 over, so half of an odd number ends in .5.",
   lrnPickDbl: "Pick a digit to double",
   lrnPickHalf: "Pick a number to halve",
-  lrnTry: "Now try it on a bigger number",
+  lrnTryDbl: "Now try a two-digit number",
+  lrnTryHalf: "Now try a two-digit number",
+  lrnTryNote: "Press Next step. The answer comes last.",
   lrnNew: "New number",
-  lrnGo: "Work it out step by step",
-  frameA: "Number", frameB: "Doubled copy", frameC: "Left over",
-  grpA: "Group 1", grpB: "Group 2",
-  capDblSingle: function (n, r) { return "Double " + n + " = " + r + ". " + n + " + " + n + " fits in the ones. It is a single digit, so no ten is made."; },
-  capDblTen: function (n, r) { return "Double " + n + " = " + r + ". " + n + " + " + n + " makes " + r + ": a ten" + (r > 10 ? " and " + (r - 10) + (r - 10 === 1 ? " one" : " ones") : "") + ". " + n + " is a 5–9 digit, so it makes a ten."; },
+  lrnGo: "Try a number of my own",
+  bsPlace: ["Tens", "Ones"],
+  bsAnd: function (n) { return n + " ones and " + n + " more ones"; },
+  bsSwap: "Swap 10 ones for 1 ten",
+  bsNow: function (t, o) { return "Now there is " + t + (t === 1 ? " ten" : " tens") + " and " + o + (o === 1 ? " one" : " ones"); },
+  bsTen: function (n, o) { return n + " is 1 ten and " + o + (o === 1 ? " one" : " ones"); },
+  bsSwapTen: "Swap the ten for 10 ones",
+  bsGroup: function (i) { return "Group " + i; },
+  bsLeft: "Left over",
   capDblZero: "Double 0 = 0. Nothing doubled is nothing.",
-  capHalfEven: function (k, h) { return "Half of " + k + " = " + h + ". " + k + " counters share into 2 equal groups of " + h + "."; },
-  capHalfOdd: function (k, h, r) { return k + " is odd. 2 groups of " + h + " and 1 counter left over. Cut the left over counter in half: half of " + k + " = " + r + "."; },
+  capDblSingle: function (n, r) { return "Double " + n + " = " + r + ". " + n + " ones + " + n + " ones = " + r + " ones. That is a single digit, so there is no swap."; },
+  capDblTen: function (n, r) { return "Double " + n + " = " + r + ". " + n + " ones + " + n + " ones = " + r + " ones. That is 10 or more, so swap 10 ones for 1 ten." + (r === 10 ? " 10 ones are 1 ten and 0 ones. A swap makes a new ten even when no ones are left over." : " " + r + " is 1 ten and " + (r - 10) + (r - 10 === 1 ? " one." : " ones.")); },
   capHalfZero: "Half of 0 = 0.",
-  dgDblEasy: function (d, r) { return d + " doubles to " + r + ": a single digit."; },
-  dgDblTen: function (d, r) { return d + " doubles to " + r + ": it makes a ten."; },
-  dgHalfEven: function (d, r) { return d + " is even. Half of " + d + " = " + r + "."; },
-  dgHalfOdd: function (d) { return d + " is odd. It needs regrouping."; },
+  capHalfEven: function (k, h) { return "Half of " + k + " = " + h + ". " + k + " ones share into 2 equal groups of " + h + "."; },
+  capHalfOdd: function (k, h, r) { return k + " is odd. Each group gets " + h + " and 1 is left over. Half of the left over one is 0.5, so half of " + k + " = " + r + "."; },
+  capHalfTen: function (k) { return k + " is 1 ten and " + (k - 10) + " ones. The ten cannot be shared as one block, so swap it for 10 ones. Then share all " + k + " ones."; },
   inverse: function (op, a, b) { return op === "dbl" ? "Opposites: half of " + b + " is " + a + "." : "Opposites: double " + b + " is " + a + "."; },
   // explore
   badNum: "Type a number, such as 47 or 3.6.",
   tooBig: "That number is too big, or has too many decimal places. Try something smaller.",
   zeroNum: "Choose a number bigger than 0.",
   // summaries
-  sumDbl: function (m) { return "Split " + m.xs + " into " + m.partsS + ". Double each part: " + m.resS + ". Add them: " + m.rs + "."; },
-  sumHalf: function (m) { return "Split " + m.xs + " into " + m.partsS + (m.regroup || m.odd ? " (regrouped so each part can be halved)" : "") + ". Halve each part: " + m.resS + ". Add them: " + m.rs + "."; },
+  sumDbl: function (m) { return "Double each place of " + m.xs + ", then swap any group of 10 blocks for 1 block in the next place. The answer is " + m.rs + "."; },
+  sumHalf: function (m) { return "Share each place of " + m.xs + " into 2 equal groups" + (m.regroup || m.odd ? ", swapping 1 block for 10 smaller blocks where a place is odd" : "") + ". One group is " + m.rs + "."; },
   exampleHead: "Here is a similar example with different numbers.",
-  spotDbl: function (n) { return "Look at the digits of " + n + ". Does any digit make a ten when it is doubled?"; },
-  spotHalf: function (n) { return "Look at the digits of " + n + ". Is any digit odd, so that regrouping is needed?"; },
-  spotYesDbl: "Yes. A digit from 5 to 9 makes a ten when it is doubled.",
+  spotDbl: function (n) { return "Look at the digits of " + n + ". When you double it, will you need to swap 10 blocks of one place for 1 block of the next place?"; },
+  spotHalf: function (n) { return "Look at the digits of " + n + ". When you halve it, will you need to swap 1 block of one place for 10 blocks of the next place down?"; },
+  spotYesDbl: "Yes. A digit from 5 to 9 doubles to 10 or more, so 10 blocks are swapped for 1.",
   spotNoDbl: "No. Every digit is 0 to 4, so every double is a single digit.",
-  spotYesHalf: "Yes. An odd digit cannot be halved exactly, so it needs regrouping.",
-  spotNoHalf: "No. Every digit is even, so every part halves easily.",
+  spotYesHalf: "Yes. An odd digit leaves 1 over, so it is swapped for 10 blocks of the next place down.",
+  spotNoHalf: "No. Every digit is even, so every place shares equally.",
   /* word problems */
   words: {
     dblCount: [
@@ -1187,12 +1212,11 @@ var TXT = {
       function (n) { return "A jug holds " + n + " litres of juice. Half of it is poured out. How many litres are poured out?"; },
       function (n) { return "A road is " + n + " km long. Lena has cycled half of it. How many kilometres has she cycled?"; }
     ]
-  },
-  hintDbl: "Look at each digit. 0–4 double to a single digit. 5–9 make a ten. Split the number into parts, double each part, then add the doubles together.",
-  hintHalf: "Look at each digit. Even digits halve easily. For an odd digit, regroup: split the number into parts you can halve (1 ten = 10 ones). Halve each part, then add.",
+  },  hintDbl: "Double every place. If a place now has 10 or more blocks, swap 10 of them for 1 block in the next place. Digits 0 to 4 never need a swap.",
+  hintHalf: "Share every place into 2 equal groups. If a place is odd, swap 1 block for 10 blocks in the next place down first.",
   hintOdd: "Half of an odd number ends in .5.",
   hintMissing: "Doubling and halving are opposites. Do the opposite to the number you are given.",
-  hintSpotD: "Doubling digits 0, 1, 2, 3 and 4 gives 0, 2, 4, 6 and 8. What happens with 5, 6, 7, 8 and 9?",
+  hintSpotD: "Doubling the digits 0, 1, 2, 3 and 4 gives 0, 2, 4, 6 and 8. What happens with 5, 6, 7, 8 and 9?",
   hintSpotH: "Even digits are 0, 2, 4, 6 and 8. Odd digits are 1, 3, 5, 7 and 9."
 };
 
@@ -1282,134 +1306,152 @@ function model(g) {
 }
 function eqStr(g) { var m = model(g); return g.op === "dbl" ? TXT.dblEq(m.xs, m.rs) : TXT.halfEq(m.xs, m.rs); }
 function eqQ(g) { var m = model(g); return g.op === "dbl" ? TXT.dblName(m.xs) + " = " + TXT.qMark : TXT.halfName(m.xs) + " = " + TXT.qMark; }
+/* ================= place names and descriptions ================= */
+function placeName(e, plural) {
+  if (e >= 0) return (plural ? TXT.pl : TXT.sg)[e] || ("10^" + e);
+  return (plural ? TXT.dpl : TXT.dsg)[-e - 1] || ("10^" + e);
+}
+function cap1(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+/* "4 tens and 7 ones" from counts per column (index 0 = left) */
+function desc(m, cnt) {
+  var L = m.L, S = m.S, first = L, last = -1, i, parts = [], zeroIdx = L - 1 - S;
+  for (i = 0; i < L; i++) if (cnt[i]) { if (i < first) first = i; last = i; }
+  if (last < zeroIdx) last = zeroIdx;
+  if (first > zeroIdx) first = zeroIdx;
+  for (i = first; i <= last; i++) { var e = L - 1 - i - S; parts.push(cnt[i] + " " + placeName(e, cnt[i] !== 1)); }
+  return parts.length > 1 ? parts.slice(0, -1).join(", ") + TXT.and + parts[parts.length - 1] : parts[0];
+}
+function rep(n, c) { var a = [], i; for (i = 0; i < n; i++) a.push(c); return a; }
+/* put the first ten blocks of a place into a group (a nested array) so they can be outlined */
+function grp(items) { return items.length >= 10 ? [items.slice(0, 10)].concat(items.slice(10)) : items; }
+function sumCnt(c) { return c.reduce(function (a, b) { return a + b; }, 0); }
 
-/* ================= the steps (words) ================= */
-var NSTEPS = 4;
-function stepList(m) {
-  var dbl = m.op === "dbl", out = [], pairs = "", chips = function (list) {
-    var h = ""; list.forEach(function (p, i) { if (i) h += " <span>+</span> "; h += "<span class='pc'>" + fmtS(p, m.pD) + "</span>"; }); return h;
-  };
-  out.push({ t: TXT.stLook, b: colourDigits(m.x, m.D, m.op) + "<p class='legend'>" + (dbl ? TXT.legendDbl : TXT.legendHalf) + "</p>" });
-  out.push({ t: dbl ? TXT.stSplitD : TXT.stSplitH, b: "<span class='pc'>" + m.xs + "</span> = " + chips(m.parts) + (dbl ? "" : ((m.regroup ? "<br><small class='mv-note'>" + TXT.regroup + "</small>" : "") + (m.odd ? "<br><small class='mv-note'>" + TXT.oddNote + "</small>" : ""))) });
-  m.parts.forEach(function (p, i) {
-    pairs += (i ? "<br>" : "") + "<span class='pc'>" + fmtS(p, m.pD) + "</span> " + (dbl ? MUL : DIVS) + " 2 = <span class='pc'>" + fmtS(m.res[i], m.pD) + "</span>";
-  });
-  out.push({ t: dbl ? TXT.stDoubleEach : TXT.stHalfEach, b: pairs });
-  out.push({ t: TXT.stAdd, b: chips(m.res) + " = <span class='pc res'>" + m.rs + "</span>" + (dbl && m.res.some(function (r) { return r >= pw(String(r).length - 1) * 10 && false; }) ? "" : "") });
+/* ================= the states: one list that drives every view ================= */
+function states(m) {
+  var dbl = m.op === "dbl", L = m.L, S = m.S, out = [], i, j, cur, xd = m.xd, tot, h;
+  function vals(cnt) { var c = []; for (var k = 0; k < L; k++) if (cnt[k]) c.push(fmtS(cnt[k] * pw(L - 1 - k), S)); return c; }
+  function cols(fn) { var a = []; for (var k = 0; k < L; k++) a.push(fn(k)); return a; }
+  out.push({ t: TXT.tLook, cap: TXT.cLook(m.xs, desc(m, xd)), rows: [{ cols: cols(function (k) { return rep(xd[k], "c1"); }) }], bar: { rows: [{ cells: [m.xs], cls: "", l: TXT.barWhole }] } });
+  if (dbl) {
+    tot = xd.map(function (d) { return 2 * d; });
+    var anyReady = tot.some(function (n) { return n >= 10; });
+    var barRows = function (cells3, cls3, l3) {
+      return [{ cells: vals(xd), cls: "", l: TXT.barParts }, { cells: vals(xd), cls: "o", l: TXT.barCopy }, { cells: cells3, cls: cls3, l: l3 }];
+    };
+    out.push({ t: TXT.tDouble, cap: TXT.cDouble(desc(m, tot), anyReady), rows: [{ cols: cols(function (k) { return grp(rep(xd[k], "c1").concat(rep(xd[k], "c2"))); }) }], bar: { rows: barRows(vals(tot), "g", TXT.barTogether) } });
+    cur = tot.slice();
+    for (i = L - 1; i >= 1; i--) {
+      if (cur[i] >= 10) {
+        cur[i] -= 10; cur[i - 1] += 1;
+        (function (i, snap) {
+          out.push({ t: TXT.tSwapD(placeName(L - 1 - i - S, true), placeName(L - 1 - (i - 1) - S, false)),
+            cap: TXT.cSwapD(placeName(L - 1 - i - S, true), placeName(L - 1 - (i - 1) - S, false), desc(m, snap)),
+            rows: [{ cols: cols(function (k) { return k === i - 1 ? grp(rep(snap[k] - 1, "c1").concat(["c3"])) : grp(rep(snap[k], "c1")); }) }],
+            bar: { rows: barRows(vals(snap), "g", TXT.barTogether) } });
+        })(i, cur.slice());
+      }
+    }
+    out.push({ t: TXT.tRead, cap: TXT.cRead(desc(m, cur), m.rs), rows: [{ cols: cols(function (k) { return rep(cur[k], "c1"); }) }], bar: { rows: barRows([m.rs], "g", TXT.barTogether), total: TXT.barTotal(m.rs) }, final: true });
+  } else {
+    cur = xd.slice();
+    var odds = [];
+    for (i = 0; i < L - 1; i++) if (cur[i] % 2) { cur[i]--; cur[i + 1] += 10; odds.push({ i: i, snap: cur.slice() }); }
+    out[0].cap += odds.length ? TXT.cLookHalfSome : TXT.cLookHalfNone;
+    odds.forEach(function (o) {
+      var i2 = o.i, snap = o.snap, a = placeName(L - 1 - i2 - S, true), b = placeName(L - 1 - (i2 + 1) - S, true);
+      out.push({ t: TXT.tRegroup(placeName(L - 1 - i2 - S, false), b), cap: TXT.cRegroup(a, b, desc(m, snap)),
+        rows: [{ cols: cols(function (k) { return k === i2 + 1 ? rep(snap[k] - 10, "c1").concat([rep(10, "c3")]) : rep(snap[k], "c1"); }) }],
+        bar: { rows: [{ cells: vals(snap), cls: "", l: TXT.barParts }] } });
+    });
+    h = cur.map(function (c) { return c / 2; });
+    var partsRow = { cells: vals(cur), cls: "", l: TXT.barParts };
+    out.push({ t: TXT.tShare, cap: TXT.cShare(desc(m, h)),
+      rows: [{ label: TXT.bsGroup(1), cols: cols(function (k) { return rep(h[k], "c1"); }) }, { label: TXT.bsGroup(2), cols: cols(function (k) { return rep(h[k], "c2"); }) }],
+      bar: { rows: [partsRow, { cells: vals(h), cls: "o", l: TXT.barShare(1) }, { cells: vals(h), cls: "o dim", l: TXT.barShare(2) }] } });
+    out.push({ t: TXT.tHalfRead, cap: TXT.cHalfRead(desc(m, h), m.rs), rows: [{ label: TXT.bsGroup(1), cols: cols(function (k) { return rep(h[k], "c1"); }) }],
+      bar: { rows: [partsRow, { cells: [m.rs], cls: "g", l: TXT.barShare(1) }], total: TXT.barHalfTotal(m.rs) }, final: true });
+  }
   return out;
 }
 
-/* ================= MODEL 1: counters in a place value chart ================= */
-function colLabel(e) { return e >= 0 ? fmt(pw(e)) : "0" + DEC + new Array(-e).join("0") + "1"; }
-function vCounters(m, s) {
-  var v = mk("div", "mv-pane"), dbl = m.op === "dbl", i, tbl = mk("div", "dtable"), cap, fnz = m.L, lnz = -1;
-  for (i = 0; i < m.L; i++) if (m.xd[i] || m.rd[i]) { if (i < fnz) fnz = i; lnz = i; }
-  cap = s === 0 || s === 1 ? TXT.cntStart : s === 2 ? (dbl ? TXT.cntSplit : (m.regroup || m.odd ? TXT.cntRegroup : TXT.cntSplit)) : s === 3 ? (dbl ? TXT.cntDbl : TXT.cntHalf) : (dbl ? TXT.cntDone : TXT.cntDoneH);
-  v.appendChild(mk("p", "mv-cap", cap));
+/* ================= base ten chart ================= */
+/* spec: { cols: [{h, rank, rows: [items...]}], rowLabels: [..], big: bool, pointAt: index } ; an item is a colour class or an array of items (a group of ten) */
+function btItem(c, rank, big) {
+  var s = mk("span", "it r" + Math.min(rank, 3) + " " + c); if (big) s.className += " big"; return s;
+}
+function btChart(spec) {
+  var n = spec.cols.length, wrap = mk("div", "bt" + (spec.big ? " big" : "")), nrows = spec.cols[0].rows.length, r, c;
+  wrap.style.gridTemplateColumns = "repeat(" + n + ", minmax(0, 1fr))";
+  spec.cols.forEach(function (col, ci) { var h = mk("div", "bt-h" + (spec.pointAt === ci ? " pt" : ""), col.h); wrap.appendChild(h); });
+  for (r = 0; r < nrows; r++) {
+    if (spec.rowLabels && spec.rowLabels[r]) wrap.appendChild(mk("div", "bt-rl", spec.rowLabels[r]));
+    spec.cols.forEach(function (col, ci) {
+      var cell = mk("div", "bt-c" + (spec.pointAt === ci ? " pt" : "")), items = col.rows[r], total = 0;
+      items.forEach(function (it) {
+        if (Array.isArray(it)) { var g = mk("div", "grp10"); it.forEach(function (x) { g.appendChild(btItem(x, col.rank, spec.big)); }); cell.appendChild(g); total += it.length; }
+        else { cell.appendChild(btItem(it, col.rank, spec.big)); total++; }
+      });
+      cell.appendChild(mk("div", "bt-v", String(total)));
+      wrap.appendChild(cell);
+    });
+  }
+  return wrap;
+}
+function vBase(m, st) {
+  var v = mk("div", "mv-pane"), spec = { cols: [], rowLabels: st.rows.map(function (r) { return r.label || ""; }) }, i;
   for (i = 0; i < m.L; i++) {
-    var e = m.L - 1 - i - m.S, col = mk("div", "dcol" + (e === -1 ? " pt" : "")), a, b = 0, val, dots = mk("div", "dots");
-    if (s <= 1) { a = m.xd[i]; val = m.xd[i]; }
-    else if (s === 2) { a = m.pc[i]; val = m.pc[i]; }
-    else if (s === 3) { if (dbl) { a = m.xd[i]; b = m.xd[i]; val = m.sc[i]; } else { a = m.sc[i]; b = m.sc[i]; val = m.sc[i]; } }
-    else { a = m.rd[i]; val = m.rd[i]; }
-    var k;
-    for (k = 0; k < a; k++) dots.appendChild(mk("span", "dot d1"));
-    for (k = 0; k < b; k++) dots.appendChild(mk("span", "dot " + (dbl ? "d2" : "d3")));
-    col.appendChild(mk("div", "dh", colLabel(e))); col.appendChild(dots);
-    col.appendChild(mk("div", "dv", (i >= fnz && i <= lnz) || val ? String(val) : "&nbsp;"));
-    tbl.appendChild(col);
+    (function (i) {
+      var e = m.L - 1 - i - m.S;
+      spec.cols.push({ h: cap1(placeName(e, true)), rank: m.L - 1 - i, rows: st.rows.map(function (r) { return r.cols[i]; }) });
+    })(i);
   }
-  v.appendChild(tbl);
+  if (m.S > 0) spec.pointAt = m.L - m.S;
+  v.appendChild(btChart(spec));
   return v;
 }
 
-/* ================= MODEL 2: part-whole ================= */
-function vPW(m, s) {
-  var v = mk("div", "mv-pane"), dbl = m.op === "dbl", p = m.parts.length, W = 320, R = Math.max(18, Math.min(30, Math.floor(W / p / 2) - 4)), y = [34, 104, 174, 244], i;
-  var svg = svgEl("svg", { viewBox: "0 0 " + W + " " + (s >= 4 ? 280 : (s >= 3 ? 280 : 210)), "class": "pwsvg", role: "img", "aria-label": TXT.tabs.pw });
-  function circle(cx, cy, label, fill, stroke, dashed) {
-    var c = svgEl("circle", { cx: cx, cy: cy, r: R, "stroke-width": 3 });
-    c.setAttribute("style", "fill:" + fill + ";stroke:" + stroke + ";" + (dashed ? "stroke-dasharray:5 4;" : ""));
-    svg.appendChild(c);
-    var t = svgEl("text", { x: cx, y: cy }); t.textContent = label; t.setAttribute("style", "font-size:" + (label.length > 5 ? 11 : label.length > 3 ? 13 : 16) + "px");
-    svg.appendChild(t);
-  }
-  function line(x1, y1, x2, y2) { var l = svgEl("line", { x1: x1, y1: y1, x2: x2, y2: y2 }); l.setAttribute("style", "stroke:var(--ink-soft);stroke-width:2"); svg.appendChild(l); }
-  var cx = function (i) { return (i + 0.5) * W / p; };
-  var cap = s <= 1 ? TXT.pwWhole : s === 2 ? TXT.pwParts : s === 3 ? TXT.pwOp(dbl) : TXT.pwDone;
-  v.appendChild(mk("p", "mv-cap", cap));
-  circle(W / 2, y[0], m.xs, "var(--brand-soft)", "var(--brand)");
-  if (s >= 2) for (i = 0; i < p; i++) { line(W / 2, y[0] + R, cx(i), y[1] - R); circle(cx(i), y[1], fmtS(m.parts[i], m.pD), "var(--brand-soft)", "var(--brand)"); }
-  if (s >= 3) for (i = 0; i < p; i++) {
-    var l = svgEl("line", { x1: cx(i), y1: y[1] + R + 2, x2: cx(i), y2: y[2] - R - 6 }); l.setAttribute("style", "stroke:var(--ink);stroke-width:2;marker-end:none"); svg.appendChild(l);
-    var ah = svgEl("polygon", { points: (cx(i) - 5) + "," + (y[2] - R - 10) + " " + (cx(i) + 5) + "," + (y[2] - R - 10) + " " + cx(i) + "," + (y[2] - R - 2) }); ah.setAttribute("style", "fill:var(--ink)"); svg.appendChild(ah);
-    var lt = svgEl("text", { x: cx(i) + 24, y: (y[1] + y[2]) / 2 }); lt.textContent = (dbl ? MUL : DIVS) + "2"; lt.setAttribute("style", "font-size:13px;fill:var(--ink-soft)"); svg.appendChild(lt);
-    circle(cx(i), y[2], fmtS(m.res[i], m.pD), "#FFF0C2", "#E8A512");
-  }
-  if (s >= 3) {
-    for (i = 0; i < p; i++) line(cx(i), y[2] + R, W / 2, y[3] - R);
-    if (s >= 4) circle(W / 2, y[3], m.rs, "#DDF3E2", "var(--correct)"); else circle(W / 2, y[3], TXT.qMark, "var(--card)", "var(--ink-soft)", true);
-  }
-  v.appendChild(svg);
-  return v;
-}
-
-/* ================= MODEL 3: bar model ================= */
-function barRow(labels, cls, caption) {
-  var row = mk("div", "brow"), bar = mk("div", "bar " + (cls || ""));
+/* ================= bar model ================= */
+function barRow(cells, cls, caption) {
+  var row = mk("div", "brow"), bar = mk("div", "bar " + (cls || "") + (cells.length > 4 ? " dense" : ""));
   if (caption) row.appendChild(mk("p", "bl", caption));
-  labels.forEach(function (t) { bar.appendChild(mk("span", "bar-cell", t)); });
+  cells.forEach(function (t) { bar.appendChild(mk("span", "bar-cell", t)); });
   row.appendChild(bar); return row;
 }
-function vBar(m, s) {
-  var v = mk("div", "mv-pane"), dbl = m.op === "dbl", parts = m.parts.map(function (p) { return fmtS(p, m.pD); }), halves = m.res.map(function (p) { return fmtS(p, m.pD); });
-  var cap = s <= 1 ? TXT.barStart : s === 2 ? TXT.barParts : (dbl ? TXT.barDbl : TXT.barHalf);
-  v.appendChild(mk("p", "mv-cap", cap));
-  if (s <= 1) v.appendChild(barRow([m.xs], "", TXT.barLblWhole));
-  else {
-    v.appendChild(barRow(parts, "", dbl ? TXT.barLblWhole : TXT.barLblWhole));
-    if (s >= 3) {
-      if (dbl) {
-        v.appendChild(barRow(parts, "o", TXT.barLblCopy));
-        v.appendChild(mk("div", "bar-brace")); v.appendChild(mk("div", "bar-total", s >= 4 ? TXT.barTotal(m.rs) : TXT.barTotalQ));
-      } else {
-        v.appendChild(barRow(halves, s >= 4 ? "g" : "o", TXT.barLblShare(1)));
-        v.appendChild(barRow(halves, "o dim", TXT.barLblShare(2)));
-        v.appendChild(mk("div", "bar-total", s >= 4 ? TXT.barShare(m.rs) : TXT.barShareQ));
-      }
-    }
-  }
+function vBar(m, st) {
+  var v = mk("div", "mv-pane");
+  st.bar.rows.forEach(function (r) { v.appendChild(barRow(r.cells, r.cls, r.l)); });
+  if (st.bar.total) v.appendChild(mk("div", "bar-total", st.bar.total));
   return v;
 }
 
-/* ================= the three models, one shared stepper ================= */
+/* ================= two views, one shared stepper ================= */
 var lastView = "count";
 function makeViews(g, opt) {
   opt = opt || {};
-  var m = model(g), wrap = mk("div", "mv"), s = opt.all ? NSTEPS : 0, tabs = mk("div", "pill-row mv-tabs"), host = mk("div", ""), list = mk("ol", "steps steplist");
-  var steps = stepList(m), items = [], btns = {}, stepno = mk("span", "stepno");
+  var m = model(g), sts = states(m), N = sts.length - 1, wrap = mk("div", "mv"), s = opt.all ? N : 0, tabs = mk("div", "pill-row mv-tabs"), host = mk("div", ""), list = mk("ol", "steps steplist");
+  var items = [], btns = {}, stepno = mk("span", "stepno");
   var bar = mk("div", "stepper"), back = mk("button", "ghost-btn", TXT.stepBack), nx = mk("button", "ghost-btn", TXT.stepNext), all = mk("button", "ghost-btn", TXT.stepAll), again = mk("button", "ghost-btn", TXT.stepAgain);
   back.type = nx.type = all.type = again.type = "button";
-  steps.forEach(function (st, i) {
-    var li = mk("li", "step", "<span class='sn'>" + (i + 1) + "</span><div><b>" + st.t + "</b><p>" + st.b + "</p></div>");
+  sts.forEach(function (st, i) {
+    var li = mk("li", "step", "<span class='sn'>" + (i + 1) + "</span><div><b>" + st.t + "</b><p>" + st.cap + "</p></div>");
     items.push(li); list.appendChild(li);
   });
-  var views = [["count", vCounters], ["pw", vPW], ["bar", vBar]];
+  var views = [["count", vBase], ["bar", vBar]];
   views.forEach(function (vw) {
     var b = mk("button", "pill", TXT.tabs[vw[0]]); b.type = "button"; b.setAttribute("data-view", vw[0]); btns[vw[0]] = b; tabs.appendChild(b);
     b.addEventListener("click", function () { lastView = vw[0]; render(); });
   });
   function render() {
     host.innerHTML = "";
-    views.forEach(function (vw) { if (vw[0] === lastView) host.appendChild(vw[1](m, s)); btns[vw[0]].classList.toggle("active", vw[0] === lastView); });
-    items.forEach(function (li, i) { li.classList.toggle("pend", i >= s); li.classList.toggle("now", i === s - 1 && !opt.all); });
-    back.disabled = s <= 0 || !!opt.all; nx.disabled = s >= NSTEPS; all.disabled = s >= NSTEPS;
-    stepno.textContent = s === 0 ? TXT.stepStart : TXT.stepOf(s, NSTEPS);
-    if (opt.onStep) opt.onStep(s);
+    views.forEach(function (vw) { if (vw[0] === lastView) host.appendChild(vw[1](m, sts[s])); btns[vw[0]].classList.toggle("active", vw[0] === lastView); });
+    items.forEach(function (li, i) { li.classList.toggle("pend", i > s); li.classList.toggle("now", i === s && !opt.all); });
+    back.disabled = s <= 0 || !!opt.all; nx.disabled = s >= N; all.disabled = s >= N;
+    stepno.textContent = TXT.stepOf(s + 1, N + 1);
+    if (opt.onStep) opt.onStep(s, N);
   }
-  nx.addEventListener("click", function () { if (s < NSTEPS) s++; render(); });
+  nx.addEventListener("click", function () { if (s < N) s++; render(); });
   back.addEventListener("click", function () { if (s > 0) s--; render(); });
-  all.addEventListener("click", function () { s = NSTEPS; render(); });
+  all.addEventListener("click", function () { s = N; render(); });
   again.addEventListener("click", function () { s = 0; render(); });
   if (!opt.all) { bar.appendChild(back); bar.appendChild(nx); bar.appendChild(all); bar.appendChild(again); bar.appendChild(stepno); wrap.appendChild(bar); }
   wrap.appendChild(tabs); wrap.appendChild(host); wrap.appendChild(list); render();
@@ -1417,35 +1459,34 @@ function makeViews(g, opt) {
 }
 
 /* ================= number generators ================= */
-function bothLow(x) { return String(x).split("").every(function (c) { return parseInt(c, 10) <= 4; }); }
+function nm10(lo, hi) { var x; do { x = randInt(lo, hi); } while (x % 10 === 0); return x; }
 function dblGen(l) {
   var r = Math.random(), x, D = 0;
-  if (l === "1") { x = r < 0.75 ? randInt(1, 9) : randInt(1, 5) * 10; }
-  else if (l === "2") { x = r < 0.7 ? randInt(1, 4) * 10 + randInt(1, 4) : randInt(1, 4) * 10; }
-  else if (l === "3") { do { x = randInt(15, 99); } while (!anyTricky(x, "dbl")); }
-  else {
-    r = Math.random();
-    if (r < 0.3) x = randInt(101, 499);
-    else if (r < 0.5) x = pickFrom([randInt(2, 9) * 100, randInt(2, 9) * 1000, randInt(1, 9) * 100 + 50, randInt(1, 4) * 1000 + 500]);
-    else if (r < 0.7) x = randInt(1100, 4999);
-    else if (r < 0.9) { do { x = randInt(12, 199); } while (x % 10 === 0); D = 1; }
-    else { do { x = randInt(11, 299); } while (x % 10 === 0); D = 2; }
-  }
+  if (l === "1") x = randInt(1, 10);
+  else if (l === "2") x = randInt(1, 9) * 10;
+  else if (l === "3") x = randInt(1, 4) * 10 + randInt(1, 4);
+  else if (l === "4") { do { x = nm10(11, 99); } while (!anyTricky(x, "dbl")); }
+  else if (l === "5") {
+    if (r < 0.35) x = randInt(101, 499);
+    else if (r < 0.6) x = pickFrom([randInt(2, 9) * 100, randInt(2, 9) * 1000, randInt(1, 9) * 100 + 50, randInt(1, 4) * 1000 + 500]);
+    else x = randInt(1100, 4999);
+  } else { if (r < 0.6) { x = nm10(12, 199); D = 1; } else { x = nm10(11, 299); D = 2; } }
   return { op: "dbl", x: x, D: D };
 }
 function halfGen(l) {
   var r = Math.random(), x, D = 0;
-  if (l === "1") { x = r < 0.7 ? randInt(1, 9) * 2 : pickFrom([10, 20, 40, 60, 80]); }
-  else if (l === "2") { x = pickFrom([2, 4, 6, 8]) * 10 + pickFrom([0, 2, 4, 6, 8]); }
-  else if (l === "3") { x = pickFrom([3, 5, 7, 9]) * 10 + pickFrom([0, 2, 4, 6, 8]); }
-  else {
-    r = Math.random();
-    if (r < 0.3) x = randInt(50, 499) * 2;
-    else if (r < 0.5) { do { x = randInt(3, 99); } while (x % 2 === 0); }
-    else if (r < 0.65) x = pickFrom([randInt(2, 9) * 100, randInt(1, 9) * 1000, randInt(1, 9) * 100 + 50]);
-    else if (r < 0.85) x = randInt(550, 4999) * 2;
-    else if (r < 0.93) { do { x = randInt(11, 199); } while (x % 10 === 0); D = 1; }
-    else { do { x = randInt(11, 99); } while (x % 10 === 0); D = 2; }
+  if (l === "1") x = randInt(1, 10) * 2;
+  else if (l === "2") x = randInt(2, 9) * 10;
+  else if (l === "3") x = pickFrom([2, 4, 6, 8]) * 10 + pickFrom([2, 4, 6, 8]);
+  else if (l === "4") x = pickFrom([1, 3, 5, 7, 9]) * 10 + pickFrom([2, 4, 6, 8]);
+  else if (l === "5") {
+    if (r < 0.35) x = randInt(50, 499) * 2;
+    else if (r < 0.6) x = pickFrom([randInt(2, 9) * 100, randInt(1, 9) * 1000, randInt(1, 9) * 100 + 50]);
+    else x = randInt(550, 4999) * 2;
+  } else {
+    if (r < 0.35) { do { x = randInt(3, 99); } while (x % 2 === 0); }
+    else if (r < 0.7) { x = nm10(11, 199); D = 1; }
+    else { x = nm10(11, 99); D = 2; }
   }
   return { op: "half", x: x, D: D };
 }
@@ -1454,66 +1495,68 @@ function gen(op, l) { return op === "dbl" ? dblGen(l) : halfGen(l); }
 /* ================= BASICS (learn) ================= */
 (function () {
   var op = "dbl", cur = 7, tryNum = 47;
-  var vis = byId("lrn-vis"), cap = byId("lrn-cap"), digits = byId("lrn-digits");
-  function frame(cells, label) {
-    var w = mk("div", ""), f = mk("div", "tf");
-    if (label) w.appendChild(mk("span", "tf-label", label));
-    cells.forEach(function (c) { f.appendChild(mk("span", "tc " + c)); });
-    w.appendChild(f); return w;
+  var vis = byId("lrn-vis"), cap = byId("lrn-cap"), digits = byId("lrn-digits"), exHost = byId("lrn-ex");
+  function ones(rowsArr, labels, extra) {
+    return btChart({ big: true, rowLabels: labels, cols: [{ h: "", rank: 0, rows: rowsArr }] });
   }
-  function pad(arr) { var a = arr.slice(); while (a.length < 10) a.push(""); return a.slice(0, 10); }
-  function fill(n, c) { var a = []; for (var i = 0; i < n; i++) a.push(c); return a; }
   function drawDigits() {
     digits.innerHTML = "";
     var max = op === "dbl" ? 9 : 18;
-    for (var i = (op === "dbl" ? 0 : 0); i <= max; i++) {
+    for (var i = 0; i <= max; i++) {
       (function (n) {
-        var b = mk("button", "chip " + (op === "dbl" ? dblCls(n) : halfCls(n)) + (n === cur ? " sel" : ""), String(n)); b.type = "button";
+        var b = mk("button", "chip" + (n === cur ? " sel" : ""), String(n)); b.type = "button";
         b.addEventListener("click", function () { cur = n; drawVis(); drawDigits(); });
         digits.appendChild(b);
       })(i);
     }
   }
+  function arrow(t) { return mk("div", "bt-arrow", "&#8595; " + t); }
   function drawVis() {
     vis.innerHTML = "";
-    var f = mk("div", "tfs"), n = cur, r;
+    var n = cur, r;
     if (op === "dbl") {
       r = n * 2;
-      var seq = fill(n, "b").concat(fill(n, "o"));
-      f.appendChild(frame(pad(seq.slice(0, 10)), TXT.frameA + " + " + TXT.frameB));
-      f.appendChild(frame(pad(seq.slice(10, 20)), ""));
-      cap.innerHTML = n === 0 ? TXT.capDblZero : (r <= 9 ? TXT.capDblSingle(n, r) : TXT.capDblTen(n, r)) + " " + TXT.inverse("dbl", n, r);
+      if (n === 0) { cap.innerHTML = TXT.capDblZero; return; }
+      var seq = rep(n, "c1").concat(rep(n, "c2"));
+      vis.appendChild(btChart({ big: true, rowLabels: [TXT.bsAnd(n)], cols: [{ h: TXT.bsPlace[0], rank: 1, rows: [[]] }, { h: TXT.bsPlace[1], rank: 0, rows: [grp(seq)] }] }));
+      if (r >= 10) {
+        vis.appendChild(arrow(TXT.bsSwap));
+        vis.appendChild(btChart({ big: true, rowLabels: [TXT.bsNow(1, r - 10)], cols: [{ h: TXT.bsPlace[0], rank: 1, rows: [["c3"]] }, { h: TXT.bsPlace[1], rank: 0, rows: [rep(r - 10, "c1")] }] }));
+      }
+      cap.innerHTML = (r <= 9 ? TXT.capDblSingle(n, r) : TXT.capDblTen(n, r)) + " " + TXT.inverse("dbl", n, r);
     } else {
+      if (n === 0) { cap.innerHTML = TXT.capHalfZero; return; }
       var h = Math.floor(n / 2), odd = n % 2 === 1;
-      f.appendChild(frame(pad(fill(h, "b")), TXT.grpA));
-      f.appendChild(frame(pad(fill(h, "o")), TXT.grpB));
-      if (odd) f.appendChild(frame(["g"], TXT.frameC));
-      cap.innerHTML = n === 0 ? TXT.capHalfZero : (odd ? TXT.capHalfOdd(n, h, fmtS(n * 5, 1)) : TXT.capHalfEven(n, h)) + (odd ? "" : " " + TXT.inverse("half", n, h));
+      if (n >= 10) {
+        vis.appendChild(btChart({ big: true, rowLabels: [TXT.bsTen(n, n - 10)], cols: [{ h: TXT.bsPlace[0], rank: 1, rows: [["c1"]] }, { h: TXT.bsPlace[1], rank: 0, rows: [rep(n - 10, "c1")] }] }));
+        vis.appendChild(arrow(TXT.bsSwapTen));
+      }
+      var rowsArr = [rep(h, "c1"), rep(h, "c2")], labs = [TXT.bsGroup(1), TXT.bsGroup(2)];
+      if (odd) { rowsArr.push(["cg"]); labs.push(TXT.bsLeft); }
+      vis.appendChild(ones(rowsArr, labs));
+      cap.innerHTML = (n >= 10 ? TXT.capHalfTen(n) + " " : "") + (odd ? TXT.capHalfOdd(n, h, fmtS(n * 5, 1)) : TXT.capHalfEven(n, h) + " " + TXT.inverse("half", n, h));
     }
-    vis.appendChild(f);
   }
   function drawTry() {
-    var s = fmt(tryNum), out = "", i, c;
-    byId("lrn-num").innerHTML = colourDigits(tryNum, 0, op);
-    var ul = byId("lrn-facts"); ul.innerHTML = "";
-    String(tryNum).split("").forEach(function (c) {
-      var d = parseInt(c, 10), t;
-      if (op === "dbl") t = d <= 4 ? TXT.dgDblEasy(d, d * 2) : TXT.dgDblTen(d, d * 2);
-      else t = d % 2 === 0 ? TXT.dgHalfEven(d, d / 2) : TXT.dgHalfOdd(d);
-      ul.appendChild(mk("li", "", t));
-    });
+    exHost.innerHTML = "";
+    exHost.appendChild(mk("p", "ex-eq", "")).textContent = "";
+    var eq = exHost.lastChild; eq.className = "pv-number";
+    var g = { op: op, x: tryNum, D: 0 };
+    eq.textContent = eqQ(g);
+    exHost.appendChild(makeViews(g, { onStep: function (s, N) { eq.textContent = s >= N ? eqStr(g) : eqQ(g); } }));
   }
   function newTry() {
     var x;
-    if (op === "dbl") { do { x = randInt(12, 98); } while (!anyTricky(x, "dbl") || bothLow(x) || x % 10 === 0); }
-    else { do { x = randInt(12, 98); } while (x % 2 === 1 || !anyTricky(x, "half") || x % 10 === 0); }
+    if (op === "dbl") { do { x = nm10(12, 98); } while (!anyTricky(x, "dbl")); }
+    else x = pickFrom([1, 3, 5, 7, 9]) * 10 + pickFrom([2, 4, 6, 8]);
     tryNum = x; drawTry();
   }
   function setOp(v) {
     op = v; cur = op === "dbl" ? 7 : 14;
     byId("lrn-rule").innerHTML = op === "dbl" ? TXT.lrnRuleDbl : TXT.lrnRuleHalf;
     byId("lrn-pick-title").textContent = op === "dbl" ? TXT.lrnPickDbl : TXT.lrnPickHalf;
-    byId("lrn-try-title").textContent = TXT.lrnTry;
+    byId("lrn-try-title").textContent = op === "dbl" ? TXT.lrnTryDbl : TXT.lrnTryHalf;
+    byId("lrn-try-note").textContent = TXT.lrnTryNote;
     drawDigits(); drawVis(); newTry();
   }
   wirePills("lrn-op", setOp);
@@ -1526,15 +1569,14 @@ function gen(op, l) { return op === "dbl" ? dblGen(l) : halfGen(l); }
 (function () {
   var op = "dbl", host = byId("views-host"), eq = byId("eq-line"), msg = byId("in-msg");
   function show(g) {
-    var m = model(g);
     byId("in-a").value = fmtS(g.x, g.D); msg.textContent = "";
     eq.textContent = eqQ(g);
     host.innerHTML = "";
-    host.appendChild(makeViews(g, { onStep: function (s) { eq.textContent = s >= NSTEPS ? eqStr(g) : eqQ(g); } }));
+    host.appendChild(makeViews(g, { onStep: function (s, N) { eq.textContent = s >= N ? eqStr(g) : eqQ(g); } }));
   }
   function setOpUI(v) { op = v; var b = document.querySelectorAll("#op-pills .pill"); b.forEach(function (x) { x.classList.toggle("active", x.dataset.value === v); }); }
-  wirePills("op-pills", function (v) { op = v; show(gen(op, "1")); });
-  [["ex1", "1"], ["ex2", "3"], ["ex3", "4"]].forEach(function (p) { byId(p[0]).addEventListener("click", function () { show(gen(op, p[1])); }); });
+  wirePills("op-pills", function (v) { op = v; show(gen(op, "4")); });
+  [["ex1", "3"], ["ex2", "4"], ["ex3", "5"]].forEach(function (p) { byId(p[0]).addEventListener("click", function () { show(gen(op, p[1])); }); });
   byId("in-go").addEventListener("click", function () {
     var s = parseNum(byId("in-a").value);
     if (s === null) { msg.textContent = TXT.badNum; return; }
@@ -1548,7 +1590,7 @@ function gen(op, l) { return op === "dbl" ? dblGen(l) : halfGen(l); }
     document.querySelector("#mode-pills [data-value=explore]").click();
     show(g);
   };
-  show(gen("dbl", "1"));
+  show(gen("dbl", "4"));
 })();
 
 /* ================= modes: basics / explore / practise ================= */
@@ -1572,15 +1614,19 @@ var QUIZ = {
     half: "Halving numbers."
   },
   levelHints: {
-    "1": "The basics: single digits and a few tens, such as double 7 and half of 14.",
-    "2": "Two-digit numbers where nothing needs regrouping, such as double 32 and half of 86.",
-    "3": "Two-digit numbers that need regrouping, such as double 47 and half of 74.",
-    "4": "Three- and four-digit numbers, thousands, odd numbers that halve to a .5 number, and decimals such as double 3.6 and half of 0.9."
+    "1": "Doubles of 1 to 10 and halves of even numbers to 20, such as double 7 and half of 14.",
+    "2": "Multiples of 10, such as double 40 and half of 30.",
+    "3": "Two-digit numbers with nothing to swap, such as double 32 and half of 86.",
+    "4": "Two-digit numbers with a swap, such as double 47 and half of 74.",
+    "5": "Hundreds and thousands, such as double 350 and half of 1,800.",
+    "6": "Decimals and odd numbers, such as double 3.6, half of 0.9 and half of 7."
   },
   makeQuestion: function (s) {
     var op = pickFrom(["dbl", "half"]);
     if (s.topic === "dbl") op = "dbl"; else if (s.topic === "half") op = "half";
-    var kind = pickFrom(["calc", "calc", "missing", "word", "spot"]), g = gen(op, s.level), q = { kind: kind, level: s.level, g: g };
+    var lv = Number(s.level), kinds = lv >= 4 ? ["calc", "calc", "missing", "word", "spot"] : ["calc", "calc", "missing", "word"];
+    var kind = pickFrom(kinds), g = gen(op, s.level), q = { kind: kind, level: s.level, g: g };
+    if (kind === "spot") g = q.g = gen(op, Math.random() < 0.5 ? "3" : (lv >= 5 ? "5" : "4"));
     if (kind === "word") {
       var nonWhole = (op === "half" && (g.x % 2 === 1 || g.D > 0)) || g.D > 0;
       q.meas = nonWhole || Math.random() < 0.35; q.wi = randInt(0, 9);
@@ -1591,7 +1637,7 @@ var QUIZ = {
     var m = model(q.g), n = "<span class='num'>" + m.xs + "</span>", r = "<span class='num'>" + m.rs + "</span>";
     if (q.kind === "calc") return (q.g.op === "dbl" ? TXT.dblName(n) : TXT.halfName(n)) + " = ?";
     if (q.kind === "missing") return (q.g.op === "dbl" ? TXT.dblName("<span class='num'>?</span>") : TXT.halfName("<span class='num'>?</span>")) + " = " + r;
-    if (q.kind === "spot") return (q.g.op === "dbl" ? TXT.spotDbl(n) : TXT.spotHalf(n)) + "<br><span class='num'>" + colourDigits(q.g.x, q.g.D, q.g.op).replace(/dg (easy|ten|odd)/g, "dg") + "</span>";
+    if (q.kind === "spot") return q.g.op === "dbl" ? TXT.spotDbl(n) : TXT.spotHalf(n);
     return wordText(q);
   },
   renderAnswer: function (q, area) {
@@ -1620,7 +1666,7 @@ var QUIZ = {
       var tricky = anyTricky(g.x, g.op), ok = w.state.value === tricky;
       lockYesNo(w.state, tricky);
       var why = g.op === "dbl" ? (tricky ? TXT.spotYesDbl : TXT.spotNoDbl) : (tricky ? TXT.spotYesHalf : TXT.spotNoHalf);
-      var rv = reveal(why, colourDigits(g.x, g.D, g.op) + " " + (g.op === "dbl" ? TXT.legendDbl : TXT.legendHalf));
+      var rv = reveal(why, eqStr(g));
       return { right: ok, msg: ok ? "Correct!" : "Not quite.", reveal: rv.h, revealExtra: rv.extra };
     }
     var raw = w.input.value.trim();
