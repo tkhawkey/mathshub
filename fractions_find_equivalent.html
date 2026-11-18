@@ -991,11 +991,43 @@ function lockYesNo(state, correctValue) {
 }
 
 
-/* ================= helpers: decimal strings, formatting ================= */
-var DEC = ".", GROUP = ",", MUL = "×", DIVS = "÷", THOUS_COMMA = true;
+var MUL = "×", DIVS = "÷";
+var TXT = {
+  barAria: function (n, d) { return n + " out of " + d + " equal parts coloured"; },
+  eqAria: function (a, b, c, d, op, k) { return a + " over " + b + " equals " + c + " over " + d + ". Top and bottom " + (op === "mul" ? "multiplied" : "divided") + " by " + k + "."; },
+  opsTitle: function (m) { return m === "mul" ? "Multiply the top and the bottom by" : "Divide the top and the bottom by"; },
+  cannotDivide: function (n, d) { return "No whole number (except 1) goes into both " + n + " and " + d + ", so " + n + "/" + d + " cannot be divided. It is already in its simplest form. Try multiplying, or choose a new fraction."; },
+  tooMany: function (n, d) { return n + "/" + d + " has too many parts to multiply here. Choose a new fraction."; },
+  explain: function (n, d, c, e, m, k) { var s = m === "mul" ? MUL : DIVS; return n + "/" + d + " = " + c + "/" + e + ". Top: " + n + " " + s + " " + k + " = " + c + ". Bottom: " + d + " " + s + " " + k + " = " + e + "."; },
+  addBtn: "What if we add instead?", hideThis: "Hide this",
+  addTxt: function (n, d, n2, d2, k) { return "Add " + k + " to the top and the bottom and " + n + "/" + d + " becomes " + n2 + "/" + d2 + ". The bars are not the same size, so these fractions are not equivalent. Adding changes the amount. Only multiply or divide."; },
+  errNum: "Type a whole number in each box.",
+  errRange: function (m) { return "The top number must be smaller than the bottom number, and the bottom number can be up to " + m + "."; },
+  topicHints: {
+    mixed: "Warm-up uses multiplying only. The higher levels add dividing.",
+    mul: "Multiply the top and the bottom by the same number.",
+    div: "Divide the top and the bottom by the same number."
+  },
+  levelHints: {
+    "1": "The missing number is on the right. Times tables for 2, 3, 4, 5 and 10.",
+    "2": "Any of the four numbers can be missing. Times tables up to 10.",
+    "3": "Harder times tables, up to 12. The equation can be written either way round."
+  },
+  inputLabel: "The missing number",
+  hint: function (x, y, topRow, hard) {
+    var row = topRow ? "top" : "bottom", other = topRow ? "bottom" : "top";
+    return "Look at the two " + row + " numbers you know: " + x + " and " + y + ". What do you do to get from " + x + " to " + y + "? Do the same to the " + other + " number." + (hard ? " Use your times tables." : "");
+  },
+  invalid: "Type a whole number.",
+  ok: "Correct!",
+  notQuite: function (a) { return "Not quite. The missing number is " + a + "."; },
+  reveal: function (a, b, c, d, op, k) {
+    var s = op === "mul" ? MUL : DIVS, w = op === "mul" ? "multiply" : "divide";
+    return "To go from " + a + "/" + b + " to " + c + "/" + d + ", " + w + " the top and the bottom by " + k + ". Top: " + a + " " + s + " " + k + " = " + c + ". Bottom: " + b + " " + s + " " + k + " = " + d + ".";
+  }
+};
 
 /* ================= helpers ================= */
-var MUL = "×", DIVS = "÷";
 function sym(op) { return op === "mul" ? MUL : DIVS; }
 function fracTxt(n, d) { return n + "/" + d; }
 
@@ -1004,7 +1036,7 @@ function drawBar(host, n, d, bad) {
   var bar = document.createElement("div");
   bar.className = "fe-bar" + (d > 24 ? " many" : "") + (bad ? " bad" : "");
   bar.setAttribute("role", "img");
-  bar.setAttribute("aria-label", n + " out of " + d + " equal parts coloured");
+  bar.setAttribute("aria-label", TXT.barAria(n, d));
   for (var i = 0; i < d; i++) {
     var c = document.createElement("div");
     c.className = "c" + (i < n ? " on" : "");
@@ -1022,7 +1054,7 @@ function drawEq(host, a, b, c, d, op, k) {
            '<rect x="' + (x - w / 2) + '" y="126" width="' + w + '" height="4" rx="2" fill="currentColor"/>' +
            '<text x="' + x + '" y="168" font-size="38" text-anchor="middle">' + bot + '</text>';
   }
-  var svg = '<svg viewBox="0 0 320 264" role="img" aria-label="' + a + ' over ' + b + ' equals ' + c + ' over ' + d + '. Top and bottom ' + (op === "mul" ? "multiplied" : "divided") + ' by ' + k + '.">' +
+  var svg = '<svg viewBox="0 0 320 264" role="img" aria-label="' + TXT.eqAria(a, b, c, d, op, k) + '">' +
     '<defs><marker id="fe-ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#3D56B5"/></marker></defs>' +
     '<path class="arr" d="M85 80 C85 22 235 22 235 80" marker-end="url(#fe-ah)"/>' +
     '<text class="lab" x="160" y="22" text-anchor="middle">' + s + '</text>' +
@@ -1036,7 +1068,7 @@ function drawEq(host, a, b, c, d, op, k) {
 }
 
 function fqHtml(top, bot, missTop, missBot) {
-  return '<span class="fq"><span class="t' + '">' + (missTop ? '<span class="miss">?</span>' : top) + '</span><span class="b">' + (missBot ? '<span class="miss">?</span>' : bot) + '</span></span>';
+  return '<span class="fq"><span class="t">' + (missTop ? '<span class="miss">?</span>' : top) + '</span><span class="b">' + (missBot ? '<span class="miss">?</span>' : bot) + '</span></span>';
 }
 
 /* ================= EXPLAIN screen ================= */
@@ -1065,14 +1097,12 @@ function fqHtml(top, bot, missTop, missBot) {
     var ks = validKs();
     var bars = byId("fe-bars"), eq = byId("fe-eq"), msg = byId("fe-msg"), ops = byId("fe-ops");
     bars.innerHTML = ""; ops.innerHTML = "";
-    byId("fe-ops-title").textContent = FE.mode === "mul" ? "Multiply the top and the bottom by" : "Divide the top and the bottom by";
+    byId("fe-ops-title").textContent = TXT.opsTitle(FE.mode);
     drawBar(bars, FE.n, FE.d);
     if (!ks.length) {
       eq.innerHTML = "";
       byId("fe-add").classList.add("hidden"); byId("fe-addbtn").disabled = true; byId("fe-addbtn").setAttribute("aria-expanded", "false");
-      msg.textContent = FE.mode === "div"
-        ? "No whole number (except 1) goes into both " + FE.n + " and " + FE.d + ", so " + fracTxt(FE.n, FE.d) + " cannot be divided. It is already in its simplest form. Try multiplying, or choose a new fraction."
-        : fracTxt(FE.n, FE.d) + " has too many parts to multiply here. Choose a new fraction.";
+      msg.textContent = FE.mode === "div" ? TXT.cannotDivide(FE.n, FE.d) : TXT.tooMany(FE.n, FE.d);
       return;
     }
     byId("fe-addbtn").disabled = false;
@@ -1080,7 +1110,7 @@ function fqHtml(top, bot, missTop, missBot) {
     var k = FE.k, c = FE.mode === "mul" ? FE.n * k : FE.n / k, d = FE.mode === "mul" ? FE.d * k : FE.d / k;
     drawBar(bars, c, d);
     drawEq(eq, FE.n, FE.d, c, d, FE.mode, k);
-    msg.textContent = fracTxt(FE.n, FE.d) + " = " + fracTxt(c, d) + ". Top: " + FE.n + " " + sym(FE.mode) + " " + k + " = " + c + ". Bottom: " + FE.d + " " + sym(FE.mode) + " " + k + " = " + d + ".";
+    msg.textContent = TXT.explain(FE.n, FE.d, c, d, FE.mode, k);
     ks.forEach(function (v) {
       var b = document.createElement("button");
       b.type = "button"; b.className = "chip" + (v === k ? " sel" : ""); b.textContent = sym(FE.mode) + " " + v;
@@ -1093,13 +1123,12 @@ function fqHtml(top, bot, missTop, missBot) {
     var box = byId("fe-add");
     box.classList.toggle("hidden", !addOpen);
     byId("fe-addbtn").setAttribute("aria-expanded", addOpen ? "true" : "false");
-    byId("fe-addbtn").textContent = addOpen ? "Hide this" : "What if we add instead?";
+    byId("fe-addbtn").textContent = addOpen ? TXT.hideThis : TXT.addBtn;
     if (!addOpen) return;
     var hb = byId("fe-addbars"); hb.innerHTML = "";
     var n2 = FE.n + k, d2 = FE.d + k;
     drawBar(hb, FE.n, FE.d); drawBar(hb, n2, d2, true);
-    byId("fe-addtxt").textContent = "Add " + k + " to the top and the bottom and " + fracTxt(FE.n, FE.d) + " becomes " + fracTxt(n2, d2) +
-      ". The bars are not the same size, so these fractions are not equivalent. Adding changes the amount. Only multiply or divide.";
+    byId("fe-addtxt").textContent = TXT.addTxt(FE.n, FE.d, n2, d2, k);
   }
   wirePills("fe-mode", function (v) {
     FE.mode = v;
@@ -1110,9 +1139,9 @@ function fqHtml(top, bot, missTop, missBot) {
   byId("fe-addbtn").addEventListener("click", function () { addOpen = !addOpen; render(); });
   function useOwn() {
     var n = byId("fe-n").value.trim(), d = byId("fe-d").value.trim(), m = byId("fe-inmsg");
-    if (!/^\d+$/.test(n) || !/^\d+$/.test(d)) { m.textContent = "Type a whole number in each box."; return; }
+    if (!/^\d+$/.test(n) || !/^\d+$/.test(d)) { m.textContent = TXT.errNum; return; }
     n = +n; d = +d;
-    if (n < 1 || d < 2 || n >= d || d > MAXD) { m.textContent = "The top number must be smaller than the bottom number, and the bottom number can be up to " + MAXD + "."; return; }
+    if (n < 1 || d < 2 || n >= d || d > MAXD) { m.textContent = TXT.errRange(MAXD); return; }
     m.textContent = ""; FE.n = n; FE.d = d;
     var ks = validKs(); if (ks.length) FE.k = pickFrom(ks);
     render();
@@ -1145,16 +1174,8 @@ function gen(op, lvl) {
 var QUIZ = {
   storageKey: "fe-best-streak",
   defaultTopic: "mixed",
-  topicHints: {
-    mixed: "Warm-up uses multiplying only. The higher levels add dividing.",
-    mul: "Multiply the top and the bottom by the same number.",
-    div: "Divide the top and the bottom by the same number."
-  },
-  levelHints: {
-    "1": "The missing number is on the right. Times tables for 2, 3, 4, 5 and 10.",
-    "2": "Any of the four numbers can be missing. Times tables up to 10.",
-    "3": "Harder times tables, up to 12. The equation can be written either way round."
-  },
+  topicHints: TXT.topicHints,
+  levelHints: TXT.levelHints,
   makeQuestion: function (s) {
     var op;
     if (s.topic === "mul") op = "mul";
@@ -1169,29 +1190,27 @@ var QUIZ = {
     return '<span class="fq-eq">' + fqHtml(v.a, v.b, m === "a", m === "b") + '<span class="eqs">=</span>' + fqHtml(v.c, v.d, m === "c", m === "d") + '</span>';
   },
   renderAnswer: function (q, area) {
-    return { input: makeTextInput(area, { short: true, numeric: true, label: "The missing number" }) };
+    return { input: makeTextInput(area, { short: true, numeric: true, label: TXT.inputLabel }) };
   },
   hint: function (q) {
     var topRow = (q.miss === "b" || q.miss === "d");        // missing is a bottom number, so the top numbers are both known
-    var m = q.miss, v = q.vals, x, y, row, other;
-    if (topRow) { x = v.a; y = v.c; row = "top"; other = "bottom"; }
-    else { x = v.b; y = v.d; row = "bottom"; other = "top"; }
-    return "Look at the two " + row + " numbers you know: " + x + " and " + y + ". What do you do to get from " + x + " to " + y + "? Do the same to the " + other + " number." + (q.level === "3" ? " Use your times tables." : "");
+    var v = q.vals, x, y;
+    if (topRow) { x = v.a; y = v.c; } else { x = v.b; y = v.d; }
+    return TXT.hint(x, y, topRow, q.level === "3");
   },
   aid: function (q) { return null; },
   check: function (q, w) {
     var raw = w.input.value.trim();
     if (!raw) return null;
-    if (!/^\d+$/.test(raw)) return { invalid: "Type a whole number." };
+    if (!/^\d+$/.test(raw)) return { invalid: TXT.invalid };
     var n = parseInt(raw, 10), right = n === q.answer;
     w.input.disabled = true; w.input.classList.add(right ? "correct" : "wrong");
     var dop = q.flipped ? (q.op === "mul" ? "div" : "mul") : q.op;
-    var a = q.L.n, b = q.L.d, c = q.R.n, d = q.R.d, s = sym(dop), word = dop === "mul" ? "multiply" : "divide";
-    var html = "<h3>" + fracTxt(a, b) + " = " + fracTxt(c, d) + "</h3><p>To go from " + fracTxt(a, b) + " to " + fracTxt(c, d) + ", " + word + " the top and the bottom by " + q.k +
-      ". Top: " + a + " " + s + " " + q.k + " = " + c + ". Bottom: " + b + " " + s + " " + q.k + " = " + d + ".</p><div class='fe-eqhost'></div>";
+    var a = q.L.n, b = q.L.d, c = q.R.n, d = q.R.d;
+    var html = "<h3>" + fracTxt(a, b) + " = " + fracTxt(c, d) + "</h3><p>" + TXT.reveal(a, b, c, d, dop, q.k) + "</p><div class='fe-eqhost'></div>";
     return {
       right: right,
-      msg: right ? "Correct!" : "Not quite. The missing number is " + q.answer + ".",
+      msg: right ? TXT.ok : TXT.notQuite(q.answer),
       reveal: html,
       revealExtra: function (box) {
         var host = box.querySelector(".fe-eqhost");
