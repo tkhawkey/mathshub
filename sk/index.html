@@ -695,6 +695,17 @@
       <span class="open-hint">Klepni a zisti viac &gt;</span>
     </button>
 
+    <button class="card" data-resource="fractionequiv">
+      <span class="tab">Zlomky: Rovnocenné pásiky</span>
+      <div class="icon-row" aria-hidden="true">
+        <div class="icon-dot" style="background:#002199;">1/2</div>
+        <div class="icon-dot" style="background:#05951A;">2/4</div>
+      </div>
+      <h2>Zlomky: Rovnocenné pásiky</h2>
+      <p>Meň horné a dolné číslo dvoch zlomkových pásikov. Keď pásiky ukazujú rovnaké množstvo, zozelenajú.</p>
+      <span class="open-hint">Klepni a zisti viac &gt;</span>
+    </button>
+
     <button class="card" data-resource="fractionfind">
       <span class="tab">Hľadanie rovnocenných zlomkov</span>
       <div class="icon-row" aria-hidden="true">
@@ -703,6 +714,39 @@
       </div>
       <h2>Hľadanie rovnocenných zlomkov</h2>
       <p>Zisti, prečo sa horné aj dolné číslo musí násobiť alebo deliť tým istým číslom, a potom nájdi chýbajúce číslo.</p>
+      <span class="open-hint">Klepni a zisti viac &gt;</span>
+    </button>
+
+    <button class="card" data-resource="fractionratio">
+      <span class="tab">Zlomky: Metóda pomeru</span>
+      <div class="icon-row" aria-hidden="true">
+        <div class="icon-dot" style="background:#002199;">&times;4</div>
+        <div class="icon-dot" style="background:#05951A;">&divide;4</div>
+      </div>
+      <h2>Zlomky: Metóda pomeru</h2>
+      <p>Pozri sa do vnútra zlomku a zisti, koľkokrát sa horné číslo zmestí do dolného. Zlomky s rovnakým pomerom sú rovnocenné.</p>
+      <span class="open-hint">Klepni a zisti viac &gt;</span>
+    </button>
+
+    <button class="card" data-resource="fractionwall">
+      <span class="tab">Zlomková stena</span>
+      <div class="icon-row" aria-hidden="true">
+        <div class="icon-dot" style="background:#3D56B5;">1/2</div>
+        <div class="icon-dot" style="background:#05951A;">3/6</div>
+      </div>
+      <h2>Zlomková stena</h2>
+      <p>Vyfarbi zlomok na stene a uvidíš všetky riadky, ktoré s ním lícujú. Ťahaj čiaru po stene a nájdi rovnocenné zlomky.</p>
+      <span class="open-hint">Klepni a zisti viac &gt;</span>
+    </button>
+
+    <button class="card" data-resource="fractionmixed">
+      <span class="tab">Zmiešané a nepravé zlomky</span>
+      <div class="icon-row" aria-hidden="true">
+        <div class="icon-dot" style="background:#3D56B5;">7/4</div>
+        <div class="icon-dot" style="background:#05951A;">1&frac34;</div>
+      </div>
+      <h2>Zmiešané a nepravé zlomky</h2>
+      <p>Zbaľ voľné dieliky do celých pásikov alebo rozlám celky späť na dieliky a premieňaj nepravé zlomky na zmiešané čísla a naopak.</p>
       <span class="open-hint">Klepni a zisti viac &gt;</span>
     </button>
 
@@ -834,10 +878,30 @@
       body: "Vyber pizzu, kruh alebo štvorec. Šípkami nastav, na koľko rovnakých kúskov sa rozreže, od 2 do 100. Klikni na kúsok, alebo cez niekoľko kúskov potiahni, a vyber tie, ktoré máš. Vybrané kúsky ostanú farebné a ostatné zosivejú. Zlomok sa zobrazí s nadpismi Kúsky, ktoré máme (hore) a Všetky kúsky (dole), potom ho uvidíš slovami a nakoniec v základnom tvare.",
       href: "fractions_slices.html"
     },
+    "fractionequiv": {
+      title: "Zlomky: Rovnocenné pásiky",
+      body: "Vidíš dva zlomkové pásiky. Potiahni úchytku nad pásikom a zmeníš horné číslo (koľko dielov je vyfarbených). Potiahni úchytku pod pásikom a zmeníš dolné číslo (na koľko rovnakých dielov je pásik rozdelený), od 2 do 24. Môžeš aj klepnúť na číslo a vybrať nové. Keď sú oba zlomky rovnocenné, oba pásiky zozelenajú a nástroj ukáže, ako sa horné a dolné číslo vynásobili. Stlačením Náhodne dostaneš nový pár zlomkov a tlačidlom Zobraziť pomocné čiary zarovnáš konce vyfarbených častí.",
+      href: "fractions_equivalent.html"
+    },
     "fractionfind": {
       title: "Hľadanie rovnocenných zlomkov",
       body: "Pravidlo je: čokoľvek urobíš s horným číslom, musíš urobiť aj s dolným číslom a môžeš len násobiť alebo deliť. V časti Ako to funguje vyber Násobenie alebo Delenie a zvoľ číslo. Uvidíš dva pásy, šípky nad horným aj dolným číslom a nový zlomok. Tlačidlom Čo ak namiesto toho sčítame? zistíš, prečo sčítanie nefunguje. Môžeš skúsiť aj vlastný zlomok. V časti Precvičuj chýba jedno číslo, napríklad 2/7 = ?/21. Úroveň 1 používa násobenie s ľahkou násobilkou a chýbajúce číslo je vpravo. Úroveň 2 pridáva delenie a môže chýbať ktorékoľvek číslo. Úroveň 3 používa ťažšiu násobilku až do 12 a rovnosť môže byť napísaná aj opačne. Po každej odpovedi uvidíš postup so šípkami a pásmi.",
       href: "fractions_find_equivalent.html"
+    },
+    "fractionratio": {
+      title: "Zlomky: Metóda pomeru",
+      body: "Pri tejto metóde sa pozeráš do vnútra každého zlomku. Koľkokrát sa horné číslo zmestí do dolného čísla? Toto číslo je pomer. V 1/4 je dolné číslo 4-krát väčšie ako horné. V 2/8 je dolné číslo tiež 4-krát väčšie ako horné. Rovnaký pomer znamená, že zlomky sú rovnocenné. V časti Ako to funguje šípky ukazujú × od horného čísla k dolnému a : od dolného k hornému a oba zlomky sa zafarbia na zeleno, keď sa pomery zhodujú. Použi Rovnocenná dvojica alebo Rôzna dvojica, alebo napíš vlastné zlomky. Ak sa horné číslo do dolného nezmestí presne, zlomok ukáže prerušované šípky a poznámku, že neexistuje celočíselný násobiteľ. V časti Precvičuj rozhoduješ, či sú dva zlomky rovnocenné, hľadáš pomer, dopĺňaš chýbajúce číslo alebo vyberáš zhodný zlomok. Úroveň 1 má ľahké pomery, úroveň 2 má blízke pomery, ktoré sa ťažšie rozlišujú, a úroveň 3 má pomery do 12.",
+      href: "fractions_ratio_method.html"
+    },
+    "fractionwall": {
+      title: "Zlomková stena",
+      body: "Stena ukazuje ten istý celok rozdelený na rôzny počet rovnakých dielov. V režime Vyfarbiť klikni na tehličku a vyfarbíš tento zlomok. Keď je zapnuté Vyfarbiť rovnocenné, všetky riadky, ktoré presne lícujú, sa rozsvietia nazeleno a prerušovaná čiara ukáže, kde všetky končia. Políčka na konci riadkov ukazujú zlomky a reťaz pod stenou ukazuje, ako sa zo základného tvaru dostaneš ku každému zlomku vynásobením horného aj dolného čísla tým istým číslom. V režime Čiara ťahaj čiaru po stene. Prichytáva sa k okrajom tehličiek a riadky, kde dopadne presne na okraj, sú rovnocenné zlomky. Môžeš zobraziť zlomky, desatinné čísla alebo percentá, skryť súčty a kliknutím na políčko si ich overiť, alebo stlačiť Náhodne pre výzvu.",
+      href: "fractions_wall.html"
+    },
+    "fractionmixed": {
+      title: "Zmiešané a nepravé zlomky",
+      body: "Vyber smer. Nepravý zlomok na zmiešané číslo: začínaš s kopou voľných dielikov. Stlač Zbaliť celok a plný rad sa zbalí do pásika. Každý plný pásik je jeden celok. Keď už nezostane dosť dielikov na ďalší celok, zvyšné dieliky tvoria zlomkovú časť a postup ukáže delenie so zvyškom. Zmiešané číslo na nepravý zlomok: začínaš s celými pásikmi a niekoľkými voľnými dielikmi. Stlač Rozlámať celok a pásik sa rozpadne na dieliky, potom ich všetky spočítaj. Postup ukáže násobenie a pripočítanie. V Precvičuj môžeš prevádzať v oboch smeroch alebo pomiešane, s obrázkom ako pomôckou. Pri Nájdi chybu uvidíš prevod a rozhodneš, či je správny.",
+      href: "fractions_mixed_improper.html"
     },
     "triangular": {
       title: "Trojuholníkové čísla",
