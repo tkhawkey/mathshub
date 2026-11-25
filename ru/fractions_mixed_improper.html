@@ -675,6 +675,55 @@
 .pk-pic .pk-c { height:22px; }
 .pk-pic .pk-one { font-size:14px; }
 .pk-work { margin-bottom:18px; }
+
+.pk-ask { margin:10px 0 4px; background:var(--card); border:1.5px solid var(--border); border-radius:12px; padding:12px 16px; }
+.pk-ask[hidden] { display:none; }
+.pk-q { margin:0 0 8px; font-size:18px; font-weight:700; }
+.pk-predsum { margin:8px 0 0; font-weight:700; color:var(--ink-soft); font-size:15px; }
+.pk-tap { cursor:pointer; border:0; padding:0; font:inherit; }
+button.pk-piece { display:block; }
+button.pk-piece:hover { background:#2B3F94; transform:scale(1.08); }
+button.pk-piece:focus-visible, button.pk-tray:focus-visible, .pk-c.pk-tap:focus-visible { outline:3px solid var(--focus); outline-offset:2px; }
+button.pk-tray { background:none; border-radius:8px; }
+button.pk-tray:hover .pk-cells { border-color:#C21E3A; }
+button.pk-tray:hover .pk-c { background:#C9A0A8; }
+.pk-cells.open { border:2px dashed #3D56B5; background:#fff; }
+.pk-cells.open .pk-c { background:#fff; border-right:1px solid var(--border); }
+.pk-cells.open button.pk-c { background:#3D56B5; border-right:1px solid rgba(255,255,255,.7); }
+.pk-c.over { background:#C21E3A !important; }
+.pk-piece.used { opacity:.22; }
+.pk-piece.ghost { background:#fff; border:2px dashed #9AA3C9; }
+.pk-piece.over { background:#C21E3A; }
+.pk-cap.good { color:#04600F; }
+.pk-cap.bad { color:#C21E3A; }
+.pk-verdict { font-weight:700; }
+
+.pk-legend { margin:14px 0 6px; font-size:14px; font-weight:700; color:var(--ink-soft); }
+.pk-bars { display:flex; flex-direction:column; gap:10px; max-width:600px; min-height:48px; }
+.pk-brow { display:flex; align-items:center; gap:12px; }
+.pk-bar { display:flex; flex:1; height:40px; border:2px solid var(--ink-soft); border-radius:6px; overflow:hidden; background:#fff; padding:0; font:inherit; }
+.pk-bar.locked { border-color:#05951A; }
+.pk-bar.locked .pk-cell.on { background:#05951A; }
+.pk-bar.ok { border-color:#05951A; box-shadow:0 0 0 2px #05951A; }
+.pk-bar.bad { border-color:#C21E3A; box-shadow:0 0 0 2px #C21E3A; }
+.pk-cell { flex:1 1 0; min-width:0; border:0; border-right:1px solid var(--border); background:#fff; padding:0; margin:0; border-radius:0; }
+.pk-cell:last-child { border-right:0; }
+.pk-cell.on { background:#3D56B5; border-right-color:rgba(255,255,255,.6); }
+.pk-cell.claim { box-shadow:inset 0 0 0 3px #05951A; }
+.pk-cell.claimbad { box-shadow:inset 0 0 0 3px #C21E3A; }
+button.pk-cell { cursor:pointer; }
+button.pk-cell.next { background:#E9E0F9; box-shadow:inset 0 0 0 3px #9973E4; animation:pkglow 1.1s ease-in-out infinite; }
+button.pk-cell.last:hover { background:#C9A0A8; }
+button.pk-cell:focus-visible { outline:3px solid var(--focus); outline-offset:-3px; }
+@keyframes pkglow { 0%,100% { background:#E9E0F9; } 50% { background:#C4AEEF; } }
+button.pk-bar.next { cursor:pointer; box-shadow:0 0 0 3px #9973E4; animation:pkglow2 1.1s ease-in-out infinite; }
+button.pk-bar.next:focus-visible { outline:3px solid var(--focus); outline-offset:3px; }
+@keyframes pkglow2 { 0%,100% { box-shadow:0 0 0 2px #C4AEEF; } 50% { box-shadow:0 0 0 5px #9973E4; } }
+.pk-blab { min-width:150px; display:flex; align-items:center; gap:6px; font-weight:700; color:#04600F; font-size:18px; }
+.pk-eq { font-size:16px; }
+.pk-pic .pk-bars { max-width:520px; }
+.pk-pic .pk-bar { height:30px; }
+.pk-pic .pk-blab { min-width:60px; font-size:16px; }
 </style>
 <!-- pwa -->
 <link rel="manifest" href="../manifest.webmanifest">
@@ -693,7 +742,7 @@
     <div class="masthead">
       <h1>Смешанные и неправильные дроби</h1>
     </div>
-    <p class="subtitle">Неправильная дробь и смешанное число — это два способа записать одно и то же количество. Собери кусочки в целые полоски или разбей целые обратно на кусочки.</p>
+    <p class="subtitle">Неправильная дробь и смешанное число — два способа записать одно и то же количество. Закрашивай полоски и смотри, сколько получилось целых, или считай полоски и находи все кусочки.</p>
   </header>
 
   <div class="mode-row">
@@ -716,17 +765,14 @@
 
     <div class="pk-big" id="pk-num" aria-live="polite"></div>
 
-    <div class="pk-lab">Целые полоски</div>
-    <div class="pk-trays" id="pk-trays"></div>
-    <div class="pk-lab">Отдельные кусочки</div>
-    <div class="pk-loose" id="pk-loose"></div>
+    <p class="pk-legend" id="pk-legend"></p>
+    <div class="pk-bars" id="pk-bars"></div>
 
     <p class="pk-status" id="pk-status" aria-live="polite"></p>
     <p class="sq-msg" id="pk-msg" aria-live="polite"></p>
 
     <div class="tools-row">
-      <button class="primary-btn" id="pk-step" type="button" style="margin-top:0;"></button>
-      <button class="ghost-btn" id="pk-all" type="button">Выполнить все шаги</button>
+      <button class="ghost-btn" id="pk-rest" type="button"></button>
       <button class="ghost-btn" id="pk-again" type="button">Начать заново</button>
       <button class="ghost-btn" id="pk-new" type="button">Новая дробь</button>
     </div>
@@ -859,6 +905,36 @@ var TXT = {
   fbNoAdd: function (w, d, r) { return "Это только целые (" + w + " " + MUL + " " + d + "). Нужно ещё прибавить верхнее число (" + r + ")."; },
   hintToMixed: function (n, d, mult) { return "Сколько раз " + d + " помещается в " + n + "? Считай кратные " + d + ": " + mult + ". Каждый раз — одно целое. Кусочки, которые остались, — это новое верхнее число."; },
   hintToImproper: function (d) { return "Кусочков в одном целом: " + d + ". Умножь целое число на " + d + ", а потом прибавь верхнее число."; },
+  instrToMixed: "Верхнее число говорит, сколько кусочков закрасить. Каждая полоска — одно целое, значит, полная полоска — это 1. Закрась все кусочки, а потом посмотри, сколько получилось полных полосок.",
+  instrToImproper: "Смешанное число — это несколько полных полосок и часть ещё одной. Нажимай на полоски по порядку, чтобы записать общую сумму на этот момент, а потом посчитай все кусочки.",
+  msgDoneM: "Каждая полная полоска — это одно целое. Последняя полоска показывает, что осталось.",
+  msgTap: "Нажми на светящуюся полоску, чтобы подписать её суммой на этот момент.",
+  msgDoneI: "Все кусочки сосчитаны. Теперь сложи верхние числа дробей.",
+  msgPackExact: "Каждый кусочек лежит в полной полоске. Ничего не осталось.",
+  rest: "Закрасить остаток полоски",
+  ariaCell: "Следующий кусочек. Нажми, чтобы закрасить.",
+  ariaUndo: "Последний закрашенный кусочек. Нажми, чтобы вернуть.",
+  ariaBar: "Нажми, чтобы подписать полоску суммой.",
+  qLeft: "Как ты думаешь, сколько кусочков будет закрашено в последней полоске?",
+  qTotal: "Сколько кусочков закрашено всего, во всех полосках?",
+  errPred: "Сначала впиши число.",
+  predRight: "Твоя догадка была верной!",
+  legend: function (d, nm) { return "Каждая полоска — одно целое. Кусочков в каждой полоске: " + d + (nm ? " (" + nm + ")" : "") + "."; },
+  statusShade: function (k, n) { return "Закрашено кусочков: " + k + " из " + n; },
+  statusLabel: function (t, b) { return "Готово полосок: " + t + " из " + b; },
+  msgShade: function (n) { return "Нажми на светящийся кусочек, чтобы закрасить его. Верхнее число говорит, сколько кусочков закрасить: " + n + ". Когда полоска заполнена, она подписывается суммой на этот момент. Нажми на последний закрашенный кусочек, чтобы вернуть его."; },
+  capLiveM: function (w, r) { return "Полных полосок, по-твоему: " + w + " \u00B7 Кусочков в следующей полоске: " + r; },
+  capLiveI: function (c, n) { return "Кусочков, которые ты насчитал: " + c + " \u00B7 Закрашено кусочков: " + n; },
+  qWholes: function (d) { return "Как ты думаешь, сколько полосок будет закрашено полностью?"; },
+  hintBtn: function (d) { return "Подсказка: считай по " + d; },
+  predSum2w: function (w) { return "Твоя догадка \u00B7 Целых: " + w; },
+  predSum2: function (w, l) { return "Твоя догадка \u00B7 Целых: " + w + " \u00B7 Осталось: " + l; },
+  predSum1: function (t) { return "Твоя догадка \u00B7 Кусочков: " + t; },
+  predWrongMixed: function (pw, pl, w, l) { return "Твоя догадка: целых " + pw + ", осталось " + pl + ". Полоски показывают: целых " + w + ", осталось " + l + "."; },
+  predWrongTotal: function (p, n) { return "Твоя догадка была " + p + ". Всего получилось " + n + "."; },
+  hintToMixed: function (n, d, mult) { return "Сколько раз " + d + " помещается в " + n + "? Считай по " + d + ": " + mult + ". Каждый раз — одна полная полоска. Кусочки, которые остались, — это новое верхнее число."; },
+  hintToImproper: function (d) { return "Кусочков в одной полоске: " + d + ". Умножь целое число на " + d + ", а потом прибавь верхнее число."; },
+  names: {"2": "половины", "3": "трети", "4": "четверти", "5": "пятые", "6": "шестые", "7": "седьмые", "8": "восьмые", "9": "девятые", "10": "десятые", "11": "одиннадцатые", "12": "двенадцатые"},
   ui: {"hintShow": "Показать подсказку", "hintHide": "Скрыть подсказку", "check": "Проверить", "checked": "Проверено", "aidShow": "Показать рисунок", "aidHide": "Скрыть рисунок"},
   err: {
     digits: function (q) { return "Цифры числа " + q.n + " использовали как целое число и верхнее число. Вместо этого нужно узнать, сколько раз " + q.d + " помещается в " + q.n + "."; },
@@ -890,71 +966,157 @@ function fr(n, d) { return '<span class="fr"><span>' + n + '</span><span>' + d +
 function mn(w, n, d) { return n ? '<span class="mn"><span class="mw">' + w + '</span>' + fr(n, d) + '</span>' : '<span class="mn"><span class="mw">' + w + '</span></span>'; }
 function plainMixed(w, n, d) { return n ? w + " " + n + "/" + d : String(w); }
 
-/* strips: w whole strips plus (optionally) one partial strip of r cells */
-function strip(d, filled, part) {
-  var h = '<div class="pk-cells' + (part ? " part" : "") + '">';
-  for (var i = 0; i < d; i++) h += '<div class="pk-c' + (i < filled ? "" : " off") + '"></div>';
-  return h + '</div>';
+/* ---------- bar model helpers ---------- */
+function cellsHTML(d, filled, base, f) {
+  var h = "";
+  for (var j = 0; j < d; j++) h += '<span class="pk-cell' + (j < filled ? " on" : "") + (f ? f(base + j, j) : "") + '"></span>';
+  return h;
 }
-function drawStrips(box, w, r, d) {
-  var h = '<div class="pk pk-pic"><div class="pk-trays">';
-  for (var i = 0; i < w; i++) h += '<div class="pk-tray">' + strip(d, d, false) + '<span class="pk-one">1</span></div>';
-  if (r) h += '<div class="pk-tray">' + strip(d, r, true) + '<span class="pk-one" style="color:#3D56B5;">' + fr(r, d) + '</span></div>';
+function barRow(d, filled, label, cls, base, f) {
+  return '<div class="pk-brow"><div class="pk-bar' + (cls || "") + '">' + cellsHTML(d, filled, base || 0, f) + '</div><span class="pk-blab">' + (label || "") + '</span></div>';
+}
+function oneLabel(d) { return fr(d, d) + '<span class="pk-eq">= 1</span>'; }
+function drawBars(box, w, r, d) {
+  var h = '<div class="pk pk-pic"><div class="pk-bars">';
+  for (var i = 0; i < w; i++) h += barRow(d, d, oneLabel(d), " locked");
+  if (r) h += barRow(d, r, fr(r, d), "");
   h += '</div><p class="pk-cap">' + TXT.capWhole + ": " + w + " · " + TXT.capExtra + ": " + r + '</p></div>';
   box.insertAdjacentHTML("beforeend", h);
 }
+/* live picture used while practising: it reacts to what the child has typed */
+function livePic(box, q, wd) {
+  var d = q.d, n = q.n, h = '<div class="pk pk-pic"><div class="pk-bars">', i;
+  function num(inp) { var v = inp ? inp.value.trim() : ""; return /^\d+$/.test(v) ? Math.min(parseInt(v, 10), 99) : 0; }
+  if (q.kind === "toMixed") {
+    var wi = num(wd.w), ri = num(wd.r), B = Math.ceil(n / d), total = Math.max(B, Math.min(wi + (ri ? 1 : 0), B + 3));
+    for (i = 0; i < total; i++) {
+      var filled = i < B ? Math.min(d, n - i * d) : 0, trueFull = filled === d, cls = "", label = "";
+      if (i < wi) { cls = (i < B && trueFull) ? " ok" : " bad"; label = "1"; }
+      else if (i === wi && ri > 0) { cls = (wi === q.w && ri === q.r) ? " ok" : " bad"; label = fr(Math.min(ri, d), d); }
+      var f = (function (ii) { return function (g, j) { return ii === wi && j < ri ? " claim" : ""; }; })(i);
+      h += barRow(d, filled, label, cls, i * d, f);
+    }
+    h += '</div><p class="pk-cap">' + TXT.capLiveM(wi, ri) + '</p>';
+  } else {
+    var N = num(wd.n), cellsTotal = Math.max(n, N), rows = Math.ceil(cellsTotal / d);
+    for (i = 0; i < Math.min(rows, 20); i++) {
+      var fl = Math.max(0, Math.min(d, n - i * d));
+      h += barRow(d, fl, "", "", i * d, function (g) { return g < N ? (g < n ? " claim" : " claimbad") : ""; });
+    }
+    h += '</div><p class="pk-cap' + (N === n ? " good" : (N > n ? " bad" : "")) + '">' + TXT.capLiveI(N, n) + '</p>';
+  }
+  box.insertAdjacentHTML("beforeend", h + '</div>');
+}
 
 /* ================= EXPLORE ================= */
-var EX = { dir: "toMixed", d: 5, n: 13, w0: 2, num0: 3, w: 0, l: 13, last: null };
+var EX = { dir: "toMixed", d: 5, n: 13, w0: 2, num0: 3, stage: "shade", k: 0, locked: 0, tapped: 0, pred: null, hint: false, note: "", last: null };
+function exBarsCount() { return EX.dir === "toMixed" ? Math.ceil(EX.n / EX.d) : EX.w0 + (EX.num0 ? 1 : 0); }
 function exInit() {
-  if (EX.dir === "toMixed") { EX.w = 0; EX.l = EX.n; } else { EX.w = EX.w0; EX.l = EX.num0; EX.n = EX.w0 * EX.d + EX.num0; }
-  EX.last = null; exDraw();
-}
-function exDone() { return EX.dir === "toMixed" ? EX.l < EX.d : EX.w === 0; }
-function exStep() {
-  if (EX.dir === "toMixed") { if (EX.l >= EX.d) { EX.l -= EX.d; EX.w++; EX.last = "tray"; } }
-  else if (EX.w > 0) { EX.w--; EX.l += EX.d; EX.last = "loose"; }
+  if (EX.dir === "toImproper") EX.n = EX.w0 * EX.d + EX.num0;
+  EX.k = 0; EX.locked = 0; EX.tapped = 0; EX.stage = EX.dir === "toMixed" ? "shade" : "act"; EX.pred = null; EX.hint = false; EX.note = ""; EX.last = null;
   exDraw();
 }
+function exShadeNext() {
+  if (EX.stage !== "shade" || EX.k >= EX.n) return;
+  EX.k++; EX.last = EX.k - 1; EX.note = "";
+  if (EX.k === EX.n) { EX.stage = "done"; EX.locked = exBarsCount(); }
+  exDraw();
+}
+function exUndo() { if (EX.stage === "shade" && EX.k > 0) { EX.k--; EX.last = null; exDraw(); } }
+function exRest() {
+  if (EX.stage !== "shade") return;
+  var end = Math.min(EX.n, (Math.floor(EX.k / EX.d) + 1) * EX.d);
+  EX.k = end; EX.last = null;
+  if (EX.k === EX.n) { EX.stage = "done"; EX.locked = exBarsCount(); }
+  exDraw();
+}
+function exBarTap() {
+  if (EX.dir === "toImproper" && EX.stage === "act") { EX.tapped++; if (EX.tapped >= exBarsCount()) EX.stage = "done"; exDraw(); }
+}
+function exCum(i) {
+  var d = EX.d;
+  return EX.dir === "toMixed" ? Math.min(EX.n, (i + 1) * d) : (i < EX.w0 ? (i + 1) * d : EX.n);
+}
+/* running total written at the end of a bar: improper fraction = mixed number */
+function exPartLabel(i) {
+  var d = EX.d, c = exCum(i);
+  return fr(c, d) + '<span class="pk-eq">= ' + mn(Math.floor(c / d), c % d, d) + '</span>';
+}
+function exPartFrac(i) {
+  var d = EX.d;
+  if (EX.dir === "toMixed") return fr(Math.min(d, EX.n - i * d), d);
+  return fr(i < EX.w0 ? d : EX.num0, d);
+}
 function exDraw() {
-  var d = EX.d, done = exDone(), toM = EX.dir === "toMixed";
-  var h = "";
-  for (var i = 0; i < EX.w; i++) h += '<div class="pk-tray' + (EX.last === "tray" && i === EX.w - 1 ? " pop" : "") + '">' + strip(d, d, false) + '<span class="pk-one">1</span></div>';
-  byId("pk-trays").innerHTML = h || '<span class="pk-none">' + TXT.none + '</span>';
-  var lp = "";
-  for (var j = 0; j < EX.l; j++) lp += '<div class="pk-piece' + (EX.last === "loose" && j >= EX.l - d ? " pop" : "") + '"></div>';
-  var loose = byId("pk-loose");
-  loose.style.gridTemplateColumns = "repeat(" + d + ", var(--cw))";
-  loose.innerHTML = lp || '<span class="pk-none">' + TXT.none + '</span>';
+  var d = EX.d, st = EX.stage, toM = EX.dir === "toMixed", done = st === "done", asking = false;
+  var B = exBarsCount(), h = "", i, j;
+  var wTrue = toM ? Math.floor(EX.n / d) : EX.w0, rTrue = toM ? EX.n % d : EX.num0;
+  /* bars */
+  var nb = toM ? (asking ? 1 : (st === "shade" ? Math.min(B, Math.floor(EX.k / d) + 1) : B)) : B;
+  for (i = 0; i < nb; i++) {
+    var filled, cells = "", clickBar = false, label = "", cls = "";
+    if (toM) {
+      filled = asking ? 0 : Math.max(0, Math.min(d, EX.k - i * d));
+      if (st === "shade") {
+        for (j = 0; j < d; j++) {
+          var g = i * d + j, on = g < EX.k;
+          if (g === EX.k) cells += '<button type="button" class="pk-cell next" data-next="1" aria-label="' + TXT.ariaCell + '"></button>';
+          else if (g === EX.k - 1) cells += '<button type="button" class="pk-cell on last' + (EX.last === g ? " pop" : "") + '" data-undo="1" aria-label="' + TXT.ariaUndo + '"></button>';
+          else cells += '<span class="pk-cell' + (on ? " on" : "") + '"></span>';
+        }
+      } else cells = cellsHTML(d, filled, i * d);
+      if (!asking && EX.k >= Math.min(EX.n, (i + 1) * d)) { label = exPartLabel(i); cls = filled === d ? " locked" : ""; }
+    } else {
+      filled = i < EX.w0 ? d : EX.num0; cells = cellsHTML(d, filled, 0);
+      if (i < EX.tapped) { label = exPartLabel(i); cls = filled === d ? " locked" : ""; }
+      clickBar = (st === "act" && i === EX.tapped);
+    }
+    if (clickBar) h += '<div class="pk-brow"><button type="button" class="pk-bar pk-tap next' + cls + '" data-bar="1" aria-label="' + TXT.ariaBar + '">' + cells + '</button><span class="pk-blab"></span></div>';
+    else h += '<div class="pk-brow"><div class="pk-bar' + cls + '">' + cells + '</div><span class="pk-blab">' + label + '</span></div>';
+  }
+  byId("pk-bars").innerHTML = h;
+  byId("pk-legend").textContent = TXT.legend(d, nameOf(d));
   /* big number */
   var big;
-  if (toM) big = fr(EX.n, d) + '<span>=</span>' + (done ? '<span class="pk-result">' + mn(EX.w, EX.l, d) + '</span>' : '<span class="q">?</span>');
+  if (toM) big = fr(EX.n, d) + '<span>=</span>' + (done ? '<span class="pk-result">' + mn(wTrue, rTrue, d) + '</span>' : '<span class="q">?</span>');
   else big = mn(EX.w0, EX.num0, d) + '<span>=</span>' + (done ? '<span class="pk-result">' + fr(EX.n, d) + '</span>' : '<span class="q">?</span>');
   byId("pk-num").innerHTML = big;
   /* status + message */
-  byId("pk-status").textContent = toM ? TXT.statusPack(EX.w, EX.l) : TXT.statusBreak(EX.w, EX.l);
-  var msg;
-  if (toM) msg = done ? (EX.l ? TXT.msgPackDone(d) : TXT.msgPackExact) : TXT.msgPack(d);
-  else msg = done ? TXT.msgBreakDone : TXT.msgBreak;
+  var status = "", msg = "";
+  if (toM) {
+    if (st === "shade") { status = TXT.statusShade(EX.k, EX.n); msg = TXT.msgShade(EX.n); }
+    else if (done) { status = TXT.statusShade(EX.n, EX.n); msg = rTrue ? TXT.msgDoneM : TXT.msgPackExact; }
+  } else if (!asking) { status = TXT.statusLabel(EX.tapped, B); msg = done ? TXT.msgDoneI : TXT.msgTap; }
+  byId("pk-status").textContent = status;
   byId("pk-msg").textContent = msg;
-  byId("pk-step").textContent = toM ? TXT.stepPack : TXT.stepBreak;
-  byId("pk-step").disabled = done;
+  byId("pk-rest").style.display = (toM && st === "shade") ? "" : "none";
+  byId("pk-rest").textContent = TXT.rest;
   /* working */
   var wk = "";
-  if (toM) {
-    var k = Math.floor(EX.n / d), m = '<div class="pk-times"><span>' + TXT.timesTitle(d) + '</span>';
-    for (var t = 1; t <= k + 1; t++) m += '<span class="pk-m' + (t === k ? " hit" : (t > k ? " over" : "")) + '">' + (t * d) + '</span>';
-    m += '</div>';
-    wk += m + '<p>' + TXT.timesNote(EX.n, d, k) + '</p>';
-    if (done) {
-      var r = EX.n - k * d;
-      wk += '<p>' + EX.n + ' ' + DIVS + ' ' + d + ' = ' + k + (r ? ', ' + TXT.remainder + ' ' + r : '') + '</p>';
-      wk += '<p class="pk-result">' + TXT.so + ' ' + fr(EX.n, d) + ' = ' + mn(k, r, d) + '</p>';
+  if (asking && toM && EX.hint) {
+    var k0 = Math.floor(EX.n / d), m0 = '<div class="pk-times"><span>' + TXT.timesTitle(d) + '</span>';
+    for (var t0 = 1; t0 <= k0 + 1; t0++) m0 += '<span class="pk-m">' + (t0 * d) + '</span>';
+    wk += m0 + '</div>';
+  }
+  var cnt = toM ? (done ? B : 0) : EX.tapped;
+  if (cnt > 0) {
+    var parts = [], nums = [];
+    for (i = 0; i < cnt; i++) { parts.push(exPartFrac(i)); nums.push(i < (toM ? wTrue : EX.w0) ? d : (toM ? rTrue : EX.num0)); }
+    wk += '<p>' + parts.join(" + ") + (done ? " = " + fr(EX.n, d) : "") + '</p>';
+    if (done && !toM) { var sum = 0; nums.forEach(function (x) { sum += x; }); wk += '<p>' + nums.join(" + ") + ' = ' + sum + '</p>'; }
+  }
+  if (done) {
+    var ones = []; for (i = 0; i < wTrue; i++) ones.push("1");
+    if (toM) {
+      wk += '<p>' + ones.concat(rTrue ? [fr(rTrue, d)] : []).join(" + ") + ' = ' + mn(wTrue, rTrue, d) + '</p>';
+      wk += '<p>' + EX.n + ' ' + DIVS + ' ' + d + ' = ' + wTrue + (rTrue ? ', ' + TXT.remainder + ' ' + rTrue : '') + '</p>';
+      wk += '<p class="pk-result">' + TXT.so + ' ' + fr(EX.n, d) + ' = ' + mn(wTrue, rTrue, d) + '</p>';
+      if (EX.pred) wk += '<p class="pk-verdict">' + (EX.pred.w === wTrue && EX.pred.l === rTrue ? TXT.predRight : TXT.predWrongMixed(EX.pred.w, EX.pred.l, wTrue, rTrue) + " " + TXT.timesNote(EX.n, d, wTrue)) + '</p>';
+    } else {
+      wk += '<p>' + EX.w0 + ' ' + MUL + ' ' + d + ' + ' + EX.num0 + ' = ' + EX.n + '</p>';
+      wk += '<p class="pk-result">' + TXT.so + ' ' + mn(EX.w0, EX.num0, d) + ' = ' + fr(EX.n, d) + '</p>';
+      if (EX.pred) wk += '<p class="pk-verdict">' + (EX.pred.t === EX.n ? TXT.predRight : TXT.predWrongTotal(EX.pred.t, EX.n)) + '</p>';
     }
-  } else if (done) {
-    wk += '<p>' + EX.w0 + ' ' + MUL + ' ' + d + ' = ' + (EX.w0 * d) + '</p>';
-    wk += '<p>' + (EX.w0 * d) + ' + ' + EX.num0 + ' = ' + EX.n + '</p>';
-    wk += '<p class="pk-result">' + TXT.so + ' ' + mn(EX.w0, EX.num0, d) + ' = ' + fr(EX.n, d) + '</p>';
   }
   byId("pk-work").innerHTML = wk;
   byId("pk-work").style.display = wk ? "" : "none";
@@ -985,6 +1147,7 @@ function exOwn() {
   }
   msg.textContent = ""; exInit();
 }
+function nameOf(d) { return TXT.names[d] || ""; }
 
 /* ================= PRACTISE ================= */
 function boxes(lvl) {
@@ -1085,10 +1248,9 @@ var QUIZ = {
   },
   aid: function (q) {
     if (q.kind === "spot") return null;
-    return { label: TXT.aidLabel, build: function (box, qq) {
-      var w = qq.w, r = qq.r; drawStrips(box, w, r, qq.d);
-    } };
+    return { label: TXT.aidLabel, build: function (box, qq, wd) { livePic(box, qq, wd); } };
   },
+  aidDefault: function (q, s) { return q.kind !== "spot" && s.level === "1"; },
   check: function (q, wd) {
     if (q.kind === "spot") {
       if (wd.value === null) return null;
@@ -1114,7 +1276,7 @@ var QUIZ = {
         else if (aw === q.w) m = TXT.notQuite + " " + TXT.fbWholeOk + " " + plain;
       }
       var rev = '<p>' + q.n + ' ' + DIVS + ' ' + q.d + ' = ' + q.w + (q.r ? ', ' + TXT.remainder + ' ' + q.r : '') + '</p><p>' + TXT.checkWord + ': ' + q.w + ' ' + MUL + ' ' + q.d + ' + ' + q.r + ' = ' + q.n + '</p>';
-      return { right: ok, msg: m, reveal: ok ? null : rev, revealExtra: ok ? null : function (box) { drawStrips(box, q.w, q.r, q.d); } };
+      return { right: ok, msg: m, reveal: ok ? null : rev, revealExtra: ok ? null : function (box) { drawBars(box, q.w, q.r, q.d); } };
     }
     if (ni === "") return null;
     if (!/^\d+$/.test(ni)) return { invalid: TXT.errNum };
@@ -1125,7 +1287,7 @@ var QUIZ = {
       else if (an === q.w + q.r) m2 = TXT.notQuite + " " + TXT.fbAddOnly + " " + plain2;
     }
     var rev2 = '<p>' + q.w + ' ' + MUL + ' ' + q.d + ' = ' + (q.w * q.d) + '</p><p>' + (q.w * q.d) + ' + ' + q.r + ' = ' + q.n + '</p>';
-    return { right: ok2, msg: m2, reveal: ok2 ? null : rev2, revealExtra: ok2 ? null : function (box) { drawStrips(box, q.w, q.r, q.d); } };
+    return { right: ok2, msg: m2, reveal: ok2 ? null : rev2, revealExtra: ok2 ? null : function (box) { drawBars(box, q.w, q.r, q.d); } };
   }
 };
 
@@ -1150,17 +1312,18 @@ function initQuiz(cfg) {
     ab.classList.toggle("hidden", !aid);
     if (aid) ab.textContent = (ui.aid ? TXT.ui.aidHide : TXT.ui.aidShow);
     ax.classList.toggle("hidden", !(aid && ui.aid));
-    if (aid && ui.aid) { if (!ax.firstChild) aid.build(ax, round.q); } else ax.innerHTML = "";
+    if (aid && ui.aid) { ax.innerHTML = ""; aid.build(ax, round.q, round.widget); } else ax.innerHTML = "";
   }
   byId("hint-btn").addEventListener("click", function () { ui.hint = !ui.hint; tools(); });
   byId("aid-btn").addEventListener("click", function () { ui.aid = !ui.aid; tools(); });
   function newRound() {
-    var q = cfg.makeQuestion(settings); round = { q: q, checked: false }; ui.hint = false; ui.aid = false;
+    var q = cfg.makeQuestion(settings); round = { q: q, checked: false }; ui.hint = false; ui.aid = cfg.aidDefault ? cfg.aidDefault(q, settings) : false;
     byId("prompt").innerHTML = cfg.prompt(q);
     var area = byId("answer-area"); area.innerHTML = ""; round.widget = cfg.renderAnswer(q, area);
     var fb = byId("feedback-line"); fb.className = "feedback-line hidden"; fb.textContent = "";
     byId("reveal-area").innerHTML = "";
     var c = byId("check-btn"); c.disabled = false; c.textContent = TXT.ui.check;
+    area.querySelectorAll("input").forEach(function (inp) { inp.addEventListener("input", function () { if (ui.aid && !round.checked) tools(); }); });
     tools(); var f = area.querySelector("input"); if (f) f.focus();
   }
   function check() {
@@ -1175,6 +1338,7 @@ function initQuiz(cfg) {
     if (res.right) { score.correct++; score.streak++; if (score.streak > score.best) { score.best = score.streak; try { localStorage.setItem(cfg.storageKey, String(score.best)); } catch (e) {} } }
     else score.streak = 0;
     byId("reveal-area").innerHTML = "";
+    if (ui.aid) res.revealExtra = null;
     if (res.reveal) { var box = document.createElement("div"); box.className = "reveal-box"; box.innerHTML = res.reveal; if (res.revealExtra) res.revealExtra(box); byId("reveal-area").appendChild(box); }
     stats();
   }
@@ -1185,11 +1349,15 @@ function initQuiz(cfg) {
 
 wirePills("mode-pills", function (v) { byId("explore-screen").classList.toggle("hidden", v !== "explore"); byId("practice-area").classList.toggle("hidden", v !== "practice"); });
 wirePills("pk-dir", exSetDir);
-byId("pk-step").addEventListener("click", exStep);
-byId("pk-all").addEventListener("click", function () { var g = 0; while (!exDone() && g++ < 80) exStep(); });
+byId("pk-rest").addEventListener("click", exRest);
 byId("pk-again").addEventListener("click", exInit);
 byId("pk-new").addEventListener("click", exNew);
 byId("pk-set").addEventListener("click", exOwn);
+byId("pk-bars").addEventListener("click", function (e) {
+  if (e.target.closest("[data-next]")) exShadeNext();
+  else if (e.target.closest("[data-undo]")) exUndo();
+  else if (e.target.closest("[data-bar]")) exBarTap();
+});
 ["pk-w", "pk-n", "pk-d"].forEach(function (i) { byId(i).addEventListener("keydown", function (e) { if (e.key === "Enter") exOwn(); }); });
 exSetDir("toMixed");
 initQuiz(QUIZ);
