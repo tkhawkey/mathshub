@@ -784,6 +784,8 @@ button.pk-cell.tapme { cursor:pointer; animation:pkcut 1.1s ease-in-out infinite
 .pk-viewrow { margin:0 0 8px; }
 .pk-viewrow .pill { font-size:14px; padding:4px 12px; }
 .pk-cap.bad { color:#C21E3A; }
+
+.pk-convline { display:flex; flex-wrap:wrap; align-items:center; gap:10px; font-size:28px; font-weight:700; margin:8px 0; color:var(--ink); }
 </style>
 <!-- pwa -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -817,7 +819,9 @@ button.pk-cell.tapme { cursor:pointer; animation:pkcut 1.1s ease-in-out infinite
     <span class="tab">How it works</span>
 
     <div class="pill-row" id="pk-op" aria-label="Compare or order">
-      <button class="pill active" data-value="cmp" type="button">Compare</button>
+      <button class="pill active" data-value="same" type="button">Same denominator</button>
+      <button class="pill" data-value="top" type="button">Same numerator</button>
+      <button class="pill" data-value="diff" type="button">Different denominators</button>
       <button class="pill" data-value="ord" type="button">Order</button>
     </div>
 
@@ -925,8 +929,23 @@ button.pk-cell.tapme { cursor:pointer; animation:pkcut 1.1s ease-in-out infinite
 
 var MUL = "×", DIVS = "÷";
 var TXT = {
-  instrCmp: "Press Next to see how to compare two fractions. Each step is explained.",
-  instrOrd: "Press Next to see how to put fractions in order. Each step is explained.",
+  instr: {
+    same: "Press Next to see how to compare fractions that have the same denominator (bottom number). Each step is explained.",
+    top: "Press Next to see how to compare fractions that have the same numerator (top number). Each step is explained.",
+    diff: "Press Next to see how to compare fractions that have different denominators (bottom numbers). Each step is explained.",
+    ord: "Press Next to see how to put fractions in order. Each step is explained."
+  },
+  lookDiff: "Here are the two fractions. We want to find out which one is greater. The denominators (bottom numbers) are different, and so are the numerators (top numbers).",
+  lookOrdNB: "Here are the three fractions. We want to put them in order, from smallest to largest. The denominators (bottom numbers) are all different.",
+  ruleSame: "Rule: when the denominators (bottom numbers) are the same, the GREATER the numerator (top number), the GREATER the fraction.",
+  ruleTop: "Rule: when the numerators (top numbers) are the same, the GREATER the denominator (bottom number), the SMALLER the fraction.",
+  convMsg: function (n, d, nm, D, k, t) { return "Change " + n + "/" + d + " into " + nm + ". The denominator (bottom number) goes from " + d + " to " + D + ": " + d + " " + MUL + " " + k + " = " + D + ". Whatever we do to the denominator we must also do to the numerator (top number), so the fraction keeps the same value: " + n + " " + MUL + " " + k + " = " + t + ". So " + n + "/" + d + " = " + t + "/" + D + ". It is the same amount with a different name."; },
+  convKeep: function (f, nm) { return f + " is already in " + nm + ", so it does not change."; },
+  drawMsg: function (nm, D, tops) { return "Now both fractions are in " + nm + ", so we can draw them. Each bar is cut into " + D + " equal parts, so all the parts are the same size. Shaded cells: " + tops + "."; },
+  doneSameNum: function (a, b, rel) { return "The denominators (bottom numbers) are the same, so we compare the numerators (top numbers): " + a + " is " + (rel === "gt" ? "greater than" : (rel === "lt" ? "less than" : "equal to")) + " " + b + "."; },
+  errOwnSame: "For this case, both fractions need the same denominator (bottom number).",
+  errOwnTop: "For this case, both fractions need the same numerator (top number) but different denominators (bottom numbers).",
+  errOwnDiff: "For this case, the denominators (bottom numbers) must be different and the numerators (top numbers) must be different.",
   names: {2:"halves",3:"thirds",4:"quarters",5:"fifths",6:"sixths",7:"sevenths",8:"eighths",9:"ninths",10:"tenths",11:"elevenths",12:"twelfths",14:"fourteenths",15:"fifteenths",16:"sixteenths",18:"eighteenths",20:"twentieths",21:"twenty-firsts",24:"twenty-fourths",30:"thirtieths",36:"thirty-sixths"},
   stepOf: function (i, n) { return "Step " + i + " of " + n; },
   lookCmp: "Here are the two fractions, each on its own bar. Both bars are the same size: each one is one whole. We want to find out which fraction is bigger.",
@@ -934,19 +953,19 @@ var TXT = {
   lookBar: function (i, d, nm, t) { return "Bar " + i + ": cut into " + d + " equal parts (" + nm + "). Parts shaded: " + t + "."; },
   whySame: function (m, d, nm) { return "Every bar is cut into " + d + " equal parts (" + nm + "), so all the parts are the same size. When the parts are the same size, the fraction with more parts shaded is bigger. We only need to look at the numerators (top numbers)."; },
   whySameTop: function (n, b1, b2, small) { return "Both fractions have " + n + " parts shaded, but the parts are not the same size. The more parts a bar is cut into, the smaller each part is. Bar 1 is cut into " + b1 + " parts and bar 2 is cut into " + b2 + " parts. Bar " + small + " is cut into fewer parts, so its parts are bigger."; },
-  whyDiff: "The bars are cut into different numbers of parts, so the parts are different sizes. It is hard to compare parts that are different sizes. A bigger denominator (bottom number) does not make a bigger fraction. It makes smaller parts.",
-  whyFix: "To compare fairly, we cut the bars into smaller equal parts, so that all the parts match.",
+  whyDiff: "The denominators (bottom numbers) are different, so the parts are different sizes. It is hard to compare parts that are different sizes. A greater denominator does not make a greater fraction, and a greater numerator (top number) does not either.",
+  whyFix: "To compare fairly, we change the fractions so that all the parts are the same size. That means we need the same denominator (bottom number) in every fraction.",
   commonIntro: "To make the parts match, we need a common denominator. That is a number that every denominator (bottom number) goes into.",
   commonLists: function (d) { return "Write the multiples of each denominator (bottom number), and look for a number that is in every list. The smallest one is " + d + "."; },
-  commonSo: function (d, nm) { return "So the common denominator is " + d + ". We will cut every bar into " + d + " equal parts (" + nm + ")."; },
+  commonSo: function (d, nm) { return "So the common denominator is " + d + ". We will change every fraction into " + nm + "."; },
   cutMsg: function (d, nm, D, nmD, k) { return "Cut this bar into " + nmD + ". Each of the " + d + " parts (" + nm + ") is cut into " + k + " equal parts, because " + D + " " + DIVS + " " + d + " = " + k + "."; },
   cutMul: function (n, d, t, D, k) { return "Multiply the numerator (top number) and the denominator (bottom number) by " + k + ": " + n + " " + MUL + " " + k + " = " + t + " and " + d + " " + MUL + " " + k + " = " + D + ". So " + n + "/" + d + " = " + t + "/" + D + ". It is the same amount, made of smaller parts."; },
   orderAsk: function (nm, tops) { return "Now every fraction is in " + nm + ", so all the parts are the same size. The numerators (top numbers) are " + tops + ". Tap the smallest fraction first, then the next smallest, and so on."; },
   orderOk: function (f, left) { return "Yes, " + f + " is the smallest of the ones left. Tap the next smallest."; },
   orderAll: "That is all of them. Press Next to see the order.",
   orderBad: "Not that one. Look at the numerators (top numbers). Which is the smallest of the fractions that are left?",
-  doneTop: function (n, b1, b2) { return "Both bars have " + n + " parts shaded. The parts in the bar cut into " + Math.min(b1, b2) + " parts are bigger, so that bar has more shaded."; },
-  doneTops: function (nm, a, b, rel) { return "In " + nm + ", the shaded cells are: bar 1: " + a + ", bar 2: " + b + ". " + a + " is " + (rel === "gt" ? "more than" : (rel === "lt" ? "less than" : "equal to")) + " " + b + "."; },
+  doneTop: function (n, b1, b2) { return "Both numerators (top numbers) are " + n + ". The denominators (bottom numbers) are " + b1 + " and " + b2 + ". The greater the denominator, the smaller the fraction, so the fraction with the denominator " + Math.max(b1, b2) + " is the smaller one."; },
+  doneTops: function (nm, a, b, rel) { return "In " + nm + ", the shaded cells are: bar 1: " + a + ", bar 2: " + b + ". " + a + " is " + (rel === "gt" ? "greater than" : (rel === "lt" ? "less than" : "equal to")) + " " + b + "."; },
   doneGuide: function (rel) { return rel === "gt" ? "Look at the dashed line from the end of bar 1. The shaded part of bar 2 does not reach it." : (rel === "lt" ? "Look at the dashed line from the end of bar 1. The shaded part of bar 2 goes past it." : "Look at the dashed line from the end of bar 1. The shaded part of bar 2 ends exactly on it."); },
   doneSay: function (a, s, b, rel) { return rel === "eq" ? "So " + a + " = " + b + ". They are equivalent fractions: they show the same amount." : "So " + a + " " + s + " " + b + ". The wide end of the symbol faces the bigger fraction."; },
   doneOrder: function (chain) { return "From the smallest to the largest: " + chain + ". The numbers show the order: 1 is the smallest."; },
@@ -956,7 +975,7 @@ var TXT = {
   workTop: function (n, b1, b2) { return "Same numerator (top number): " + n + ". Denominators (bottom numbers): " + b1 + " and " + b2 + ". The smaller denominator (bottom number) has the bigger parts."; },
   workTops: function (nm, s) { return "Compare the numerators (top numbers) in " + nm + ": " + s; },
   so: "So",
-  errOwn: "Choose denominators (bottom numbers) from 2 to 12, and numerators (top numbers) that are smaller than the denominator (bottom number). The common denominator must be no more than 24.",
+  errOwn: "Choose denominators (bottom numbers) from 2 to 20, and numerators (top numbers) that are smaller than the denominator (bottom number). The common denominator must be no more than 24.",
   promptCmp: "Compare the fractions. Choose <, = or >.",
   promptBig: "Compare the numbers. Choose <, = or >.",
   promptOrdAsc: "Put the fractions in order, from smallest to largest. Tap them in order.",
@@ -1065,15 +1084,20 @@ function convHTML(f) {
 function cmpType(f) { return f[0].d === f[1].d ? "same" : (f[0].n === f[1].n ? "sameTop" : "diff"); }
 
 /* ================= EXPLORE (guided steps) ================= */
-var EX = { mode: "cmp", fr: [{ n: 3, d: 4 }, { n: 5, d: 6 }], steps: [], si: 0, sel: [], msg: "" };
+var EX = { mode: "same", fr: [{ n: 3, d: 8 }, { n: 5, d: 8 }], steps: [], si: 0, sel: [], msg: "" };
+var DEFAULTS = { same: [{ n: 3, d: 8 }, { n: 5, d: 8 }], top: [{ n: 3, d: 5 }, { n: 3, d: 8 }], diff: [{ n: 2, d: 5 }, { n: 7, d: 15 }], ord: [{ n: 1, d: 2 }, { n: 3, d: 8 }, { n: 3, d: 4 }] };
 function exInfo() {
   var f = EX.fr, ds = f.map(function (x) { return x.d; }), same = ds.every(function (d) { return d === ds[0]; }), D = lcmAll(ds);
-  var sameTop = EX.mode === "cmp" && !same && f[0].n === f[1].n;
+  var sameTop = EX.mode === "top";
   return { m: f.length, same: same, sameTop: sameTop, general: !same && !sameTop, D: D, T: f.map(function (x) { return x.n * D / x.d; }) };
 }
 function buildSteps(I) {
   var s = [{ t: "look" }, { t: "why" }];
-  if (I.general) { s.push({ t: "common" }); EX.fr.forEach(function (x, i) { if (x.d !== I.D) s.push({ t: "cut", i: i }); }); }
+  if (I.general) {
+    s.push({ t: "common" });
+    EX.fr.forEach(function (x, i) { if (x.d !== I.D) s.push({ t: "cut", i: i }); });
+    if (EX.mode !== "ord") s.push({ t: "draw" });
+  }
   if (EX.mode === "ord") s.push({ t: "order" });
   s.push({ t: "done" });
   return s;
@@ -1100,26 +1124,33 @@ function paras(a) { return a.map(function (x) { return "<p>" + stackFr(x) + "</p
 function exSay(I, step) {
   var f = EX.fr, m = I.m, D = I.D, nmD = nameOf(D), t = step.t, out = [], i, c, k;
   if (t === "look") {
-    out.push(m === 2 ? TXT.lookCmp : TXT.lookOrd);
-    f.forEach(function (x, j) { out.push(TXT.lookBar(j + 1, x.d, nameOf(x.d), x.n)); });
+    if (I.general) out.push(EX.mode === "ord" ? TXT.lookOrdNB : TXT.lookDiff);
+    else {
+      out.push(m === 2 ? TXT.lookCmp : TXT.lookOrd);
+      f.forEach(function (x, j) { out.push(TXT.lookBar(j + 1, x.d, nameOf(x.d), x.n)); });
+    }
   } else if (t === "why") {
-    if (I.same) out.push(TXT.whySame(m, f[0].d, nameOf(f[0].d)));
-    else if (I.sameTop) { var small = f[0].d < f[1].d ? 1 : 2; out.push(TXT.whySameTop(f[0].n, f[0].d, f[1].d, small)); }
+    if (I.same) { out.push(TXT.whySame(m, f[0].d, nameOf(f[0].d))); out.push(TXT.ruleSame); }
+    else if (I.sameTop) { var small = f[0].d < f[1].d ? 1 : 2; out.push(TXT.whySameTop(f[0].n, f[0].d, f[1].d, small)); out.push(TXT.ruleTop); }
     else { out.push(TXT.whyDiff); out.push(TXT.whyFix); }
   } else if (t === "common") {
     out.push(TXT.commonIntro); out.push(TXT.commonLists(D)); out.push(TXT.commonSo(D, nmD));
   } else if (t === "cut") {
     i = step.i; k = D / f[i].d;
-    out.push(TXT.cutMsg(f[i].d, nameOf(f[i].d), D, nmD, k));
-    out.push(TXT.cutMul(f[i].n, f[i].d, f[i].n * k, D, k));
+    out.push(TXT.convMsg(f[i].n, f[i].d, nmD, D, k, f[i].n * k));
+    var first = true; for (var q = 0; q < EX.si; q++) if (EX.steps[q].t === "cut") first = false;
+    if (first) f.forEach(function (x) { if (x.d === D) out.push(TXT.convKeep(ps(x), nmD)); });
+  } else if (t === "draw") {
+    out.push(TXT.drawMsg(nmD, D, I.T.join(" / ")));
   } else if (t === "order") {
     out.push(TXT.orderAsk(I.general ? nmD : nameOf(f[0].d), I.T.join(", ")));
     if (EX.msg) out.push('<strong>' + EX.msg + '</strong>');
   } else if (t === "done") {
-    if (EX.mode === "cmp") {
+    if (EX.mode !== "ord") {
       c = cmpF(f[0], f[1]);
       if (I.sameTop) out.push(TXT.doneTop(f[0].n, f[0].d, f[1].d));
-      else out.push(TXT.doneTops(I.general ? nmD : nameOf(f[0].d), I.T[0], I.T[1], relOf(c)));
+      else if (I.same) out.push(TXT.doneSameNum(f[0].n, f[1].n, relOf(c)));
+      else out.push(TXT.doneTops(nmD, I.T[0], I.T[1], relOf(c)));
       out.push(TXT.doneGuide(relOf(c)));
       out.push(TXT.doneSay(ps(f[0]), symOf(c), ps(f[1]), relOf(c)));
     } else {
@@ -1130,13 +1161,12 @@ function exSay(I, step) {
   return out;
 }
 function exDraw() {
-  var I = exInfo(), f = EX.fr, step = EX.steps[EX.si], st = step.t, m = I.m, N = EX.steps.length, done = st === "done", cmpMode = EX.mode === "cmp";
+  var I = exInfo(), f = EX.fr, step = EX.steps[EX.si], st = step.t, m = I.m, N = EX.steps.length, done = st === "done", cmpMode = EX.mode !== "ord";
+  var barsOn = !I.general || st === "draw" || st === "order" || done;
   var conv = {}, i, j, h = "";
-  if (I.general) {
-    for (j = 0; j <= EX.si; j++) if (EX.steps[j].t === "cut") conv[EX.steps[j].i] = true;
-  }
+  if (I.general) for (j = 0; j < EX.steps.length; j++) if (EX.steps[j].t === "cut") conv[EX.steps[j].i] = true;
   var order = (done && !cmpMode) ? sortedIdx(f, true) : f.map(function (x, q) { return q; });
-  order.forEach(function (idx) {
+  if (barsOn) order.forEach(function (idx) {
     var x = f[idx], k = (I.general && (conv[idx] || x.d === I.D)) ? I.D / x.d : 1, cells = cellsHTML(x.n, x.d, k, "c" + idx);
     var lab = fr(x.n, x.d);
     if (k > 1) lab += '<span class="pk-eq">=</span>' + fr(x.n * k, I.D) + ' <span class="pk-eq">(' + MUL + ' ' + k + ')</span>';
@@ -1146,7 +1176,7 @@ function exDraw() {
     if (st === "order" && EX.sel.indexOf(idx) < 0) h += '<div class="pk-brow"><button type="button" class="pk-bar next" data-ord="' + idx + '" aria-label="' + TXT.ariaOrd(ps(x)) + '">' + cells + '</button><span class="pk-blab">' + lab + '</span></div>';
     else h += '<div class="pk-brow"><div class="pk-bar' + (st === "order" ? " locked" : "") + '">' + cells + '</div><span class="pk-blab">' + lab + '</span></div>';
   });
-  var box = byId("pk-bars"); box.innerHTML = h;
+  var box = byId("pk-bars"); box.innerHTML = h; box.style.display = barsOn ? "" : "none";
   if (done && cmpMode) {
     var b0 = box.querySelector(".pk-bar"), g = document.createElement("div"); g.className = "cmp-guide";
     g.style.left = (b0.offsetLeft + b0.clientLeft + b0.clientWidth * f[0].n / f[0].d) + "px"; box.appendChild(g);
@@ -1167,6 +1197,8 @@ function exDraw() {
       for (var mm = x.d; mm <= I.D; mm += x.d) help += '<span class="pk-m' + (mm === I.D ? " hit" : "") + '">' + mm + '</span>';
       help += '</div>';
     });
+  } else if (st === "cut") {
+    for (j = 0; j <= EX.si; j++) if (EX.steps[j].t === "cut") { var x2 = f[EX.steps[j].i], k2 = I.D / x2.d; help += '<div class="pk-convline">' + fr(x2.n, x2.d) + '<span class="pk-eq">=</span>' + fr(x2.n * k2, I.D) + '<span class="pk-eq">(' + MUL + ' ' + k2 + ')</span></div>'; }
   }
   byId("pk-help").innerHTML = help; byId("pk-help").style.display = help ? "" : "none";
   byId("pk-status").textContent = st === "order" ? TXT.statusOrder(EX.sel.length, m) : "";
@@ -1189,10 +1221,10 @@ function exDraw() {
   byId("pk-work").innerHTML = wk; byId("pk-work").style.display = wk ? "" : "none";
 }
 function pickCmp(kind) {
-  var d1, d2, n1, n2, n, tries = 0;
+  var d1, d2, n1, n2, n;
   if (kind === "same") { d1 = d2 = pickFrom([4, 5, 6, 8, 10]); do { n1 = randInt(1, d1 - 1); n2 = randInt(1, d1 - 1); } while (n1 === n2); }
   else if (kind === "sameTop") { n1 = n2 = randInt(1, 4); d1 = randInt(n1 + 1, 8); do { d2 = randInt(n1 + 1, 10); } while (d2 === d1); }
-  else if (kind === "related") { var pr = pickFrom([[2, 4], [2, 8], [4, 8], [3, 6], [5, 10], [2, 6], [3, 12]]); d1 = pr[0]; d2 = pr[1]; do { n1 = randInt(1, d1 - 1); n2 = randInt(1, d2 - 1); } while (n1 * d2 === n2 * d1); }
+  else if (kind === "related") { var pr = pickFrom([[2, 4], [2, 8], [4, 8], [3, 6], [5, 10], [2, 6], [3, 12], [5, 15], [3, 9], [4, 12]]); d1 = pr[0]; d2 = pr[1]; do { n1 = randInt(1, d1 - 1); n2 = randInt(1, d2 - 1); } while (n1 * d2 === n2 * d1); }
   else { var pr2 = pickFrom([[3, 4], [2, 3], [3, 5], [4, 5], [2, 5], [5, 6], [3, 8], [4, 6]]); d1 = pr2[0]; d2 = pr2[1]; do { n1 = randInt(1, d1 - 1); n2 = randInt(1, d2 - 1); } while (n1 * d2 === n2 * d1); }
   var res = [{ n: n1, d: d1 }, { n: n2, d: d2 }];
   return Math.random() < 0.5 ? res : res.reverse();
@@ -1204,24 +1236,28 @@ function pickOrd() {
 }
 function exNew() {
   var f;
-  if (EX.mode === "cmp") f = pickCmp(pickFrom(["same", "sameTop", "related", "diff", "diff"]));
+  if (EX.mode === "same") f = pickCmp("same");
+  else if (EX.mode === "top") f = pickCmp("sameTop");
+  else if (EX.mode === "diff") f = pickCmp("related");
   else if (Math.random() < 0.25) { var d = pickFrom([6, 8, 10]); var ns = shuffle([1, 2, 3, 4, 5].filter(function (x) { return x < d; })).slice(0, 3); f = ns.map(function (n) { return { n: n, d: d }; }); }
   else f = pickOrd();
   EX.fr = f; byId("pk-inmsg").textContent = ""; exInit();
 }
 function exSetMode(v) {
-  EX.mode = v;
-  if (v === "cmp") EX.fr = [{ n: 3, d: 4 }, { n: 5, d: 6 }]; else EX.fr = [{ n: 1, d: 2 }, { n: 3, d: 8 }, { n: 3, d: 4 }];
+  EX.mode = v; EX.fr = DEFAULTS[v].map(function (x) { return { n: x.n, d: x.d }; });
   byId("pk-cwrap").style.display = v === "ord" ? "inline-flex" : "none";
-  byId("pk-instr").textContent = v === "cmp" ? TXT.instrCmp : TXT.instrOrd;
+  byId("pk-instr").textContent = TXT.instr[v];
   byId("pk-inmsg").textContent = ""; exInit();
 }
 function iv(id) { var v = byId(id).value.trim(); return /^\d+$/.test(v) ? parseInt(v, 10) : NaN; }
 function exOwn() {
-  var msg = byId("pk-inmsg"), cnt = EX.mode === "cmp" ? 2 : 3, f = [], i;
+  var msg = byId("pk-inmsg"), cnt = EX.mode === "ord" ? 3 : 2, f = [], i;
   for (i = 1; i <= cnt; i++) f.push({ n: iv("pk-t" + i), d: iv("pk-b" + i) });
-  var ok = f.every(function (x) { return x.d >= 2 && x.d <= 12 && x.n >= 1 && x.n < x.d; }) && lcmAll(f.map(function (x) { return x.d; })) <= 24;
+  var ok = f.every(function (x) { return x.d >= 2 && x.d <= 20 && x.n >= 1 && x.n < x.d; }) && lcmAll(f.map(function (x) { return x.d; })) <= 24;
   if (!ok) { msg.textContent = TXT.errOwn; return; }
+  if (EX.mode === "same" && f[0].d !== f[1].d) { msg.textContent = TXT.errOwnSame; return; }
+  if (EX.mode === "top" && (f[0].n !== f[1].n || f[0].d === f[1].d)) { msg.textContent = TXT.errOwnTop; return; }
+  if (EX.mode === "diff" && (f[0].d === f[1].d || f[0].n === f[1].n)) { msg.textContent = TXT.errOwnDiff; return; }
   EX.fr = f; msg.textContent = ""; exInit();
 }
 
@@ -1500,7 +1536,7 @@ byId("pk-bars").addEventListener("click", function (e) {
   var b = e.target.closest("[data-ord]"); if (b) exOrd(parseInt(b.getAttribute("data-ord"), 10));
 });
 ["pk-t1", "pk-b1", "pk-t2", "pk-b2", "pk-t3", "pk-b3"].forEach(function (i) { byId(i).addEventListener("keydown", function (e) { if (e.key === "Enter") exOwn(); }); });
-exSetMode("cmp");
+exSetMode("same");
 initQuiz(QUIZ);
 </script>
 <script>
